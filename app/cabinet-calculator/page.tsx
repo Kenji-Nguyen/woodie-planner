@@ -83,19 +83,6 @@ export default function CabinetCalculatorPage() {
           </ul>
         </div>
 
-        {/* Visualization Section */}
-        <div className="mt-12">
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
-              Visual Preview
-            </h2>
-            <p className="text-gray-600 mt-1">
-              See how your cabinet pieces look laid out
-            </p>
-          </div>
-          <CutVisualizer />
-        </div>
-
         {/* Stock Management Section */}
         <div className="mt-12">
           <div className="mb-6">
@@ -138,26 +125,34 @@ export default function CabinetCalculatorPage() {
           </div>
         </div>
 
-        {/* Cut Optimization Section */}
+        {/* Cut Optimization & Visual Preview Section */}
         <div className="mt-12">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-900">
-              Cut Optimization
+              Cut Optimization & Visual Layout
             </h2>
             <p className="text-gray-600 mt-1">
-              Optimize how to cut your cabinet pieces from your stock inventory
+              Optimize cuts and see the visual layout of pieces on your stock
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
             {/* Left Column - Optimization Settings */}
-            <div>
+            <div className="xl:col-span-1">
               <OptimizationSettings />
+              <div className="mt-4">
+                <OptimizationResults />
+              </div>
             </div>
 
-            {/* Right Column - Optimization Results */}
-            <div>
-              <OptimizationResults />
+            {/* Right Column - Visual Preview (takes 2/3 width on large screens) */}
+            <div className="xl:col-span-2">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  Visual Layout
+                </h3>
+                <CutVisualizer />
+              </div>
             </div>
           </div>
 
@@ -177,10 +172,10 @@ export default function CabinetCalculatorPage() {
                 • <strong>Simplify Cuts</strong>: Easier cutting patterns without rotation
               </li>
               <li>
-                • View optimized layouts on the visualization above with cut sequences
+                • Numbers on pieces in the visual layout show the order of cuts
               </li>
               <li>
-                • Numbers on pieces show the order of cuts (guillotine cutting pattern)
+                • Click "Run Optimization" to see how pieces fit on your stock with cut sequences
               </li>
             </ul>
           </div>

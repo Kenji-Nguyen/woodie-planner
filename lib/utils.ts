@@ -3,6 +3,15 @@
  */
 
 import type { CabinetConfig, ValidationResult } from "./types";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+/**
+ * shadcn/ui class name utility
+ */
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 /**
  * Format dimension in millimeters for display
@@ -29,8 +38,13 @@ export function formatDimensions(width: number, height: number): string {
  * @param height - height in millimeters
  * @returns area in mm²
  */
-export function calculateArea(width: number, height: number): number {
-  return width * height;
+export function calculateArea(width: number, height: number): string {
+  const area = width * height;
+  // Convert to m² if large enough
+  if (area >= 1000000) {
+    return `${(area / 1000000).toFixed(2)}m²`;
+  }
+  return `${area.toLocaleString()}mm²`;
 }
 
 /**

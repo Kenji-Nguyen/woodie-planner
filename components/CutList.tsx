@@ -6,12 +6,12 @@
  * Displays the generated cut list in a table format with summary
  */
 
-import { useCabinetStore } from "@/store/cabinet-store";
+import { useCabinetStoreCompat } from "@/store/cabinet-store";
 import { formatDimensions, formatArea } from "@/lib/utils";
 import { getCutListSummary } from "@/lib/cabinet-generator";
 
 export default function CutList() {
-  const { cutList } = useCabinetStore();
+  const { cutList } = useCabinetStoreCompat();
 
   // If no cut list, show empty state
   if (cutList.length === 0) {

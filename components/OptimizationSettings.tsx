@@ -1,11 +1,11 @@
 "use client";
 
-import { useCabinetStore } from "@/store/cabinet-store";
+import { useCabinetStoreCompat } from "@/store/cabinet-store";
 import { useStockStore } from "@/store/stock-store";
 import { checkStockSufficiency } from "@/lib/optimizer";
 
 export default function OptimizationSettings() {
-  const cutList = useCabinetStore((state) => state.cutList);
+  const { cutList } = useCabinetStoreCompat();
   const stockPieces = useStockStore((state) => state.stockPieces);
   const optimizationMode = useStockStore((state) => state.optimizationMode);
   const isOptimizing = useStockStore((state) => state.isOptimizing);

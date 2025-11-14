@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Stage, Layer, Rect, Text, Group } from "react-konva";
-import { useCabinetStore } from "@/store/cabinet-store";
+import { useCabinetStoreCompat } from "@/store/cabinet-store";
 import { useStockStore } from "@/store/stock-store";
 import {
   createSimpleLayout,
@@ -13,7 +13,7 @@ import {
 } from "@/lib/layout-helper";
 
 export default function CutVisualizer() {
-  const cutList = useCabinetStore((state) => state.cutList);
+  const { cutList } = useCabinetStoreCompat();
   const stockPieces = useStockStore((state) => state.stockPieces);
   const optimizationResults = useStockStore(
     (state) => state.optimizationResults
@@ -130,45 +130,49 @@ export default function CutVisualizer() {
     return (
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         {/* Header with Controls */}
-        <div className="border-b border-gray-200 p-4 bg-gray-50">
-          <div className="flex items-center justify-between">
+        <div className="border-b border-gray-200 p-3 sm:p-4 bg-gray-50">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900">
                 Optimized Cutting Layout
               </h2>
-              <p className="text-sm text-gray-500 mt-0.5">
-                Stock Piece #{selectedStockIndex + 1} of {optimizationResults.length} •
+              <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+                Stock #{selectedStockIndex + 1}/{optimizationResults.length} •
                 Scale: {Math.round(scale * 100)}%
               </p>
             </div>
 
             {/* Zoom Controls */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <button
                 onClick={handleZoomOut}
-                className="px-3 py-1.5 bg-white border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700 text-sm font-medium transition-colors"
+                className="px-3 sm:px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 active:bg-gray-100 text-gray-700 text-sm font-medium transition-colors touch-manipulation"
                 title="Zoom Out"
+                aria-label="Zoom Out"
               >
                 −
               </button>
               <button
                 onClick={handleZoomReset}
-                className="px-3 py-1.5 bg-white border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700 text-sm font-medium transition-colors"
+                className="px-2 sm:px-3 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 active:bg-gray-100 text-gray-700 text-xs sm:text-sm font-medium transition-colors touch-manipulation"
                 title="Reset Zoom"
+                aria-label="Reset Zoom"
               >
                 Reset
               </button>
               <button
                 onClick={handleZoomIn}
-                className="px-3 py-1.5 bg-white border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700 text-sm font-medium transition-colors"
+                className="px-3 sm:px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 active:bg-gray-100 text-gray-700 text-sm font-medium transition-colors touch-manipulation"
                 title="Zoom In"
+                aria-label="Zoom In"
               >
                 +
               </button>
               <button
                 onClick={handleFitToScreen}
-                className="px-3 py-1.5 bg-blue-600 border border-blue-600 rounded-md hover:bg-blue-700 text-white text-sm font-medium transition-colors"
+                className="px-2 sm:px-3 py-2 bg-blue-600 border border-blue-600 rounded-md hover:bg-blue-700 active:bg-blue-800 text-white text-xs sm:text-sm font-medium transition-colors touch-manipulation"
                 title="Fit to Screen"
+                aria-label="Fit to Screen"
               >
                 Fit
               </button>
@@ -177,16 +181,17 @@ export default function CutVisualizer() {
 
           {/* Stock Piece Tabs */}
           {optimizationResults.length > 1 && (
-            <div className="flex gap-2 mt-4 overflow-x-auto">
+            <div className="flex gap-2 mt-3 sm:mt-4 overflow-x-auto pb-1 scrollbar-thin">
               {optimizationResults.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedStockIndex(index)}
-                  className={`px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors ${
+                  className={`px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium whitespace-nowrap transition-colors touch-manipulation ${
                     index === selectedStockIndex
                       ? "bg-blue-600 text-white"
-                      : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+                      : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 active:bg-gray-100"
                   }`}
+                  aria-label={`View stock piece ${index + 1}`}
                 >
                   Stock #{index + 1}
                 </button>
@@ -298,32 +303,34 @@ export default function CutVisualizer() {
         </div>
 
         {/* Legend */}
-        <div className="border-t border-gray-200 p-4 bg-gray-50">
-          <div className="flex items-center gap-6 text-sm flex-wrap">
+        <div className="border-t border-gray-200 p-3 sm:p-4 bg-gray-50">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 text-xs sm:text-sm">
             <span className="text-gray-700 font-medium">Legend:</span>
-            <div className="flex items-center gap-2">
-              <div
-                className="w-4 h-4 rounded"
-                style={{ backgroundColor: getCategoryColor("top") }}
-              />
-              <span className="text-gray-600">Top/Bottom</span>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-4 h-4 rounded"
+                  style={{ backgroundColor: getCategoryColor("top") }}
+                />
+                <span className="text-gray-600">Top/Bottom</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-4 h-4 rounded"
+                  style={{ backgroundColor: getCategoryColor("side") }}
+                />
+                <span className="text-gray-600">Sides</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-4 h-4 rounded"
+                  style={{ backgroundColor: getCategoryColor("back") }}
+                />
+                <span className="text-gray-600">Back</span>
+              </div>
+              <span className="text-gray-500">• Numbers = cut order</span>
+              <span className="text-gray-500">• ↻ = 90° rotation</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div
-                className="w-4 h-4 rounded"
-                style={{ backgroundColor: getCategoryColor("side") }}
-              />
-              <span className="text-gray-600">Sides</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div
-                className="w-4 h-4 rounded"
-                style={{ backgroundColor: getCategoryColor("back") }}
-              />
-              <span className="text-gray-600">Back</span>
-            </div>
-            <span className="text-gray-500">• Numbers show cut sequence</span>
-            <span className="text-gray-500">• ↻ indicates 90° rotation</span>
           </div>
         </div>
       </div>
@@ -334,45 +341,49 @@ export default function CutVisualizer() {
   return (
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
       {/* Header with Controls */}
-      <div className="border-b border-gray-200 p-4 bg-gray-50">
-        <div className="flex items-center justify-between">
+      <div className="border-b border-gray-200 p-3 sm:p-4 bg-gray-50">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900">
               Cut Piece Preview
             </h2>
-            <p className="text-sm text-gray-500 mt-0.5">
+            <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
               {positions.length} piece{positions.length !== 1 ? "s" : ""} • Scale:{" "}
               {Math.round(scale * 100)}%
             </p>
           </div>
 
           {/* Zoom Controls */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <button
               onClick={handleZoomOut}
-              className="px-3 py-1.5 bg-white border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700 text-sm font-medium transition-colors"
+              className="px-3 sm:px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 active:bg-gray-100 text-gray-700 text-sm font-medium transition-colors touch-manipulation"
               title="Zoom Out"
+              aria-label="Zoom Out"
             >
               −
             </button>
             <button
               onClick={handleZoomReset}
-              className="px-3 py-1.5 bg-white border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700 text-sm font-medium transition-colors"
+              className="px-2 sm:px-3 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 active:bg-gray-100 text-gray-700 text-xs sm:text-sm font-medium transition-colors touch-manipulation"
               title="Reset Zoom"
+              aria-label="Reset Zoom"
             >
               Reset
             </button>
             <button
               onClick={handleZoomIn}
-              className="px-3 py-1.5 bg-white border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700 text-sm font-medium transition-colors"
+              className="px-3 sm:px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 active:bg-gray-100 text-gray-700 text-sm font-medium transition-colors touch-manipulation"
               title="Zoom In"
+              aria-label="Zoom In"
             >
               +
             </button>
             <button
               onClick={handleFitToScreen}
-              className="px-3 py-1.5 bg-blue-600 border border-blue-600 rounded-md hover:bg-blue-700 text-white text-sm font-medium transition-colors"
+              className="px-2 sm:px-3 py-2 bg-blue-600 border border-blue-600 rounded-md hover:bg-blue-700 active:bg-blue-800 text-white text-xs sm:text-sm font-medium transition-colors touch-manipulation"
               title="Fit to Screen"
+              aria-label="Fit to Screen"
             >
               Fit
             </button>
@@ -430,29 +441,31 @@ export default function CutVisualizer() {
       </div>
 
       {/* Legend */}
-      <div className="border-t border-gray-200 p-4 bg-gray-50">
-        <div className="flex items-center gap-6 text-sm">
+      <div className="border-t border-gray-200 p-3 sm:p-4 bg-gray-50">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 text-xs sm:text-sm">
           <span className="text-gray-700 font-medium">Legend:</span>
-          <div className="flex items-center gap-2">
-            <div
-              className="w-4 h-4 rounded"
-              style={{ backgroundColor: getCategoryColor("top") }}
-            />
-            <span className="text-gray-600">Top/Bottom</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div
-              className="w-4 h-4 rounded"
-              style={{ backgroundColor: getCategoryColor("side") }}
-            />
-            <span className="text-gray-600">Sides</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div
-              className="w-4 h-4 rounded"
-              style={{ backgroundColor: getCategoryColor("back") }}
-            />
-            <span className="text-gray-600">Back</span>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <div className="flex items-center gap-2">
+              <div
+                className="w-4 h-4 rounded"
+                style={{ backgroundColor: getCategoryColor("top") }}
+              />
+              <span className="text-gray-600">Top/Bottom</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div
+                className="w-4 h-4 rounded"
+                style={{ backgroundColor: getCategoryColor("side") }}
+              />
+              <span className="text-gray-600">Sides</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div
+                className="w-4 h-4 rounded"
+                style={{ backgroundColor: getCategoryColor("back") }}
+              />
+              <span className="text-gray-600">Back</span>
+            </div>
           </div>
         </div>
       </div>

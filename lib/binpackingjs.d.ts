@@ -1,32 +1,37 @@
 declare module "binpackingjs" {
-  export class Box {
-    constructor(name: string, width: number, height: number, depth?: number);
-    name: string;
-    width: number;
-    height: number;
-    depth?: number;
-  }
-
-  export class Bin {
-    constructor(width: number, height: number, depth?: number);
-    width: number;
-    height: number;
-    depth?: number;
-    items?: Array<{
+  export namespace BP2D {
+    class Box {
+      constructor(name: string, width: number, height: number);
+      name: string;
+      width: number;
+      height: number;
       x: number;
       y: number;
-      z?: number;
-      item: Box;
-    }>;
+      packed: boolean;
+    }
+
+    class Bin {
+      constructor(width: number, height: number);
+      width: number;
+      height: number;
+      boxes: Box[];
+    }
+
+    class Packer {
+      constructor(bins: Bin[]);
+      bins: Bin[];
+      pack(boxes: Box[]): Box[];
+    }
+
+    const heuristics: {
+      BestAreaFit: any;
+      BestLongSideFit: any;
+      BestShortSideFit: any;
+      BottomLeft: any;
+    };
   }
 
-  export interface PackerOptions {
-    allowRotation?: boolean;
-  }
-
-  export class Packer {
-    constructor(bins: Bin[]);
-    bins: Bin[];
-    pack(boxes: Box[], options?: PackerOptions): void;
+  export namespace BP3D {
+    // 3D bin packing (not used in this project)
   }
 }

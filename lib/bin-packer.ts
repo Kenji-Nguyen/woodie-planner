@@ -1,9 +1,9 @@
 // @ts-ignore - binpackingjs has no proper types
-import BinPacking from "binpackingjs";
+import * as BinPackingJS from "binpackingjs";
 import type { CutPiece, StockPiece, PlacedPiece } from "./types";
 
-// Extract classes from the default export
-const { Packer, Box, Bin } = BinPacking as any;
+// Extract classes from BP2D (2D bin packing)
+const { Packer, Box, Bin } = (BinPackingJS as any).BP2D;
 
 /**
  * Bin Packing Wrapper using binpackingjs library
@@ -33,65 +33,70 @@ export function packPiecesIntoStock(
 ): PackingResult {
   try {
     // Create a bin representing the stock piece
-    const bin = new Bin(stock.width, stock.height, Infinity);
+    const bin = new Bin(stock.width, stock.height);
 
     // Create boxes for each piece (considering quantity)
+    // Note: Box constructor only takes (width, height), not a name
     const boxes: any[] = [];
-    const pieceMap = new Map<string, CutPiece>();
+    const boxMetadata: Array<{ id: string; piece: CutPiece }> = [];
 
     cutPieces.forEach((piece) => {
       for (let i = 0; i < piece.quantity; i++) {
         const boxId = `${piece.id}_${i}`;
-        const box = new Box(boxId, piece.width, piece.height);
+        const box = new Box(piece.width, piece.height);
         boxes.push(box);
-        pieceMap.set(boxId, piece);
+        boxMetadata.push({ id: boxId, piece });
       }
     });
 
     // Create packer and pack boxes into bin
     const packer = new Packer([bin]);
 
-    // Pack with rotation option
-    try {
-      packer.pack(boxes, {
-        allowRotation,
-      });
-    } catch (packError) {
-      console.error("Packer.pack error:", packError);
-      // Try packing without options as fallback
-      packer.pack(boxes);
-    }
+    // Pack the boxes (returns array of successfully packed boxes)
+    const packedBoxes = packer.pack(boxes);
 
-    // Process results
+    // Process results from bin.boxes property
     const packedPieces: PlacedPiece[] = [];
-    const unpackedBoxIds = new Set<string>();
+    const packedIndices = new Set<number>();
 
     // Get packed boxes from the bin
     const packedBin = packer.bins[0];
-    if (packedBin.items) {
-      packedBin.items.forEach((item: any, index: number) => {
-        const piece = pieceMap.get(item.item.name);
-        if (piece) {
-          const isRotated = item.item.width !== piece.width;
+    if (packedBin.boxes && packedBin.boxes.length > 0) {
+      packedBin.boxes.forEach((box: any, seqIndex: number) => {
+        // Find the original box index in our boxes array
+        const boxIndex = boxes.findIndex((b, idx) => {
+          return !packedIndices.has(idx) &&
+                 b.width === box.width &&
+                 b.height === box.height &&
+                 Math.abs(b.x - box.x) < 0.1 &&
+                 Math.abs(b.y - box.y) < 0.1;
+        });
+
+        if (boxIndex >= 0) {
+          packedIndices.add(boxIndex);
+          const metadata = boxMetadata[boxIndex];
+
+          // Check if rotated by comparing dimensions
+          const isRotated = box.width !== metadata.piece.width;
 
           packedPieces.push({
-            cutPieceId: item.item.name,
-            x: item.x,
-            y: item.y,
-            width: item.item.width,
-            height: item.item.height,
+            cutPieceId: metadata.id,
+            x: box.x,
+            y: box.y,
+            width: box.width,
+            height: box.height,
             rotated: isRotated,
-            cutSequence: index + 1,
+            cutSequence: seqIndex + 1,
           });
         }
       });
     }
 
     // Identify unpacked pieces
-    boxes.forEach((box) => {
-      const isPacked = packedPieces.some((p) => p.cutPieceId === box.name);
-      if (!isPacked) {
-        unpackedBoxIds.add(box.name);
+    const unpackedBoxIds = new Set<string>();
+    boxMetadata.forEach((metadata, index) => {
+      if (!packedIndices.has(index)) {
+        unpackedBoxIds.add(metadata.id);
       }
     });
 

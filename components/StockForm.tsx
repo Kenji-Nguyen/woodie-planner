@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useStockStore } from "@/store/stock-store";
+import { validateStockDimensions } from "@/lib/utils";
 
 export default function StockForm() {
   const [width, setWidth] = useState("");
@@ -16,32 +17,15 @@ export default function StockForm() {
     setError("");
     setSuccess(false);
 
-    // Validation
+    // Parse values
     const widthNum = parseFloat(width);
     const heightNum = parseFloat(height);
 
-    if (!width || !height) {
-      setError("Please enter both width and height");
-      return;
-    }
+    // Validate using utility function
+    const validation = validateStockDimensions(widthNum, heightNum);
 
-    if (isNaN(widthNum) || isNaN(heightNum)) {
-      setError("Please enter valid numbers");
-      return;
-    }
-
-    if (widthNum <= 0 || heightNum <= 0) {
-      setError("Dimensions must be positive numbers");
-      return;
-    }
-
-    if (widthNum < 100 || heightNum < 100) {
-      setError("Dimensions must be at least 100mm");
-      return;
-    }
-
-    if (widthNum > 5000 || heightNum > 5000) {
-      setError("Dimensions cannot exceed 5000mm");
+    if (!validation.isValid) {
+      setError(validation.errors[0]); // Show first error
       return;
     }
 

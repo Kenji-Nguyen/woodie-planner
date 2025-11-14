@@ -7,12 +7,12 @@
  */
 
 import { useState } from "react";
-import { useCabinetStore, defaultConfig } from "@/store/cabinet-store";
+import { useCabinetStoreCompat, defaultConfig } from "@/store/cabinet-store";
 import { validateCabinetConfig } from "@/lib/utils";
 import type { CabinetConfig } from "@/lib/types";
 
 export default function CabinetForm() {
-  const { setCabinetConfig, generateCutList } = useCabinetStore();
+  const { setCabinetConfig, generateCutList } = useCabinetStoreCompat();
 
   const [formData, setFormData] = useState<Partial<CabinetConfig>>({
     width: defaultConfig.width,

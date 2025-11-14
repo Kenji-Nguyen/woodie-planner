@@ -1,7 +1,7 @@
 "use client";
 
 import { useStockStore } from "@/store/stock-store";
-import { useCabinetStore } from "@/store/cabinet-store";
+import { useCabinetStoreCompat } from "@/store/cabinet-store";
 import { formatDimension, calculateArea } from "@/lib/utils";
 import { calculateWasteStats } from "@/lib/stock-matcher";
 
@@ -10,7 +10,7 @@ export default function OptimizationResults() {
     (state) => state.optimizationResults
   );
   const stockPieces = useStockStore((state) => state.stockPieces);
-  const cutList = useCabinetStore((state) => state.cutList);
+  const { cutList } = useCabinetStoreCompat();
 
   if (!optimizationResults || optimizationResults.length === 0) {
     return (
