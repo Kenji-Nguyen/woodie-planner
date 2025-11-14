@@ -6,6 +6,9 @@
 
 import CabinetForm from "@/components/CabinetForm";
 import CutList from "@/components/CutList";
+import CutVisualizer from "@/components/CutVisualizer";
+import StockForm from "@/components/StockForm";
+import StockInventory from "@/components/StockInventory";
 import Link from "next/link";
 
 export const metadata = {
@@ -76,6 +79,64 @@ export default function CabinetCalculatorPage() {
               bottom)
             </li>
           </ul>
+        </div>
+
+        {/* Visualization Section */}
+        <div className="mt-12">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Visual Preview
+            </h2>
+            <p className="text-gray-600 mt-1">
+              See how your cabinet pieces look laid out
+            </p>
+          </div>
+          <CutVisualizer />
+        </div>
+
+        {/* Stock Management Section */}
+        <div className="mt-12">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Stock Inventory
+            </h2>
+            <p className="text-gray-600 mt-1">
+              Manage your available wood pieces for cut optimization
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Left Column - Add Stock Form */}
+            <div>
+              <StockForm />
+            </div>
+
+            {/* Right Column - Stock Inventory List */}
+            <div>
+              <StockInventory />
+            </div>
+          </div>
+
+          {/* Stock Info Section */}
+          <div className="mt-8 bg-amber-50 border border-amber-200 rounded-lg p-6">
+            <h3 className="text-sm font-semibold text-amber-900 mb-2">
+              About Stock Management
+            </h3>
+            <ul className="text-sm text-amber-800 space-y-1">
+              <li>
+                • Add your available plywood sheets or wood pieces (dimensions in mm)
+              </li>
+              <li>
+                • Common plywood sizes: 1220×2440mm (4'×8'), 1525×3050mm (5'×10')
+              </li>
+              <li>
+                • Your stock inventory is saved locally in your browser
+              </li>
+              <li>
+                • In the next phase, you&apos;ll be able to optimize cuts from your stock
+              </li>
+            </ul>
+          </div>
         </div>
       </main>
     </div>

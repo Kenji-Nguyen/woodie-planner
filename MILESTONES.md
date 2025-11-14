@@ -2,7 +2,7 @@
 
 ## Project Status
 
-**Current State**: ✅ Milestone 1 Complete! Basic cabinet calculator with cut list generation is functional.
+**Current State**: ✅ Milestone 3 Complete! Visual canvas with color-coded pieces, zoom controls, and responsive design is functional.
 
 **Key Decisions**:
 - ✅ Bin Packing Library: `binpackingjs`
@@ -10,7 +10,7 @@
 - ✅ Deployment: Handle separately/later
 - ✅ Rotation: Include in Milestone 4 for better optimization
 
-**Timeline**: 5-6 weeks to production-ready MVP (Week 1 complete)
+**Timeline**: 5-6 weeks to production-ready MVP (Weeks 1-3 complete)
 
 ---
 
@@ -106,7 +106,7 @@
 ### Tasks:
 
 #### 2.1 Stock State Management
-- [ ] Create `store/stock-store.ts` (Zustand):
+- [x] Create `store/stock-store.ts` (Zustand):
   - Stock inventory array state
   - Actions: `addStock`, `removeStock`, `updateStock`, `clearStock`
   - localStorage persistence middleware
@@ -114,7 +114,7 @@
   - Handle localStorage errors gracefully
 
 #### 2.2 Stock Form Component
-- [ ] Build `components/StockForm.tsx`:
+- [x] Build `components/StockForm.tsx`:
   - Input fields for width × height (mm)
   - "Add Stock" button
   - Validation (positive numbers, realistic sizes)
@@ -123,7 +123,7 @@
   - Error handling and display
 
 #### 2.3 Stock Inventory Component
-- [ ] Build `components/StockInventory.tsx`:
+- [x] Build `components/StockInventory.tsx`:
   - List all stock pieces with cards/rows
   - Display: dimensions, available/used status, ID
   - Edit button (inline editing or modal)
@@ -133,21 +133,21 @@
   - Count of total stock pieces
 
 #### 2.4 Integration
-- [ ] Add stock management section to cabinet calculator page
-- [ ] Connect StockForm to Zustand store
-- [ ] Connect StockInventory to Zustand store
-- [ ] Test localStorage persistence:
+- [x] Add stock management section to cabinet calculator page
+- [x] Connect StockForm to Zustand store
+- [x] Connect StockInventory to Zustand store
+- [x] Test localStorage persistence:
   - Add stock pieces
   - Refresh page
   - Verify data persists
 
 #### 2.5 UI/UX Polish
-- [ ] Responsive design for stock components (mobile, tablet, desktop)
-- [ ] Loading states (if needed)
-- [ ] Success/error feedback messages with toast or alerts
-- [ ] Keyboard accessibility (Tab navigation, Enter to submit)
-- [ ] Focus management
-- [ ] Visual polish (spacing, colors, borders)
+- [x] Responsive design for stock components (mobile, tablet, desktop)
+- [x] Loading states (if needed)
+- [x] Success/error feedback messages with toast or alerts
+- [x] Keyboard accessibility (Tab navigation, Enter to submit)
+- [x] Focus management
+- [x] Visual polish (spacing, colors, borders)
 
 ### Deliverable: ✅ Full CRUD stock management with localStorage persistence
 
@@ -160,26 +160,26 @@
 ### Tasks:
 
 #### 3.1 Konva Setup
-- [ ] Create `components/CutVisualizer.tsx` base component
-- [ ] Set up Stage and Layer (react-konva primitives)
-- [ ] Handle responsive canvas sizing (fit parent container)
-- [ ] Configure canvas dimensions and scaling
-- [ ] Test basic rendering with simple shapes
-- [ ] Handle SSR issues (dynamic import if needed)
+- [x] Create `components/CutVisualizer.tsx` base component
+- [x] Set up Stage and Layer (react-konva primitives)
+- [x] Handle responsive canvas sizing (fit parent container)
+- [x] Configure canvas dimensions and scaling
+- [x] Test basic rendering with simple shapes
+- [x] Handle SSR issues (dynamic import if needed)
 
 #### 3.2 Piece Rendering
-- [ ] Create rectangle components for pieces using react-konva
-- [ ] Add dimension labels to each piece (Text components)
-- [ ] Implement color coding system:
+- [x] Create rectangle components for pieces using react-konva
+- [x] Add dimension labels to each piece (Text components)
+- [x] Implement color coding system:
   - Top/Bottom: #3B82F6 (blue)
   - Sides: #10B981 (green)
   - Back: #F59E0B (amber)
   - Future shelves: #8B5CF6 (purple)
-- [ ] Add piece borders and shadows
-- [ ] Handle text sizing based on piece dimensions
+- [x] Add piece borders and shadows
+- [x] Handle text sizing based on piece dimensions
 
 #### 3.3 Layout Engine (Non-optimized)
-- [ ] Build `lib/layout-helper.ts`:
+- [x] Build `lib/layout-helper.ts`:
   - Simple grid layout algorithm (temporary, pre-optimization)
   - Arrange pieces in rows for visual preview
   - Calculate positions (x, y) for each piece
@@ -187,30 +187,30 @@
   - Center layout on canvas
 
 #### 3.4 Canvas Controls
-- [ ] Zoom in button (+)
-- [ ] Zoom out button (-)
-- [ ] Fit to screen button (reset zoom)
-- [ ] Pan/drag canvas support (drag background)
-- [ ] Reset view button
-- [ ] Display current zoom level
-- [ ] Zoom limits (min/max)
+- [x] Zoom in button (+)
+- [x] Zoom out button (-)
+- [x] Fit to screen button (reset zoom)
+- [x] Pan/drag canvas support (drag background)
+- [x] Reset view button
+- [x] Display current zoom level
+- [x] Zoom limits (min/max)
 
 #### 3.5 Visual Polish
-- [ ] Piece borders and styling (stroke, shadow)
-- [ ] Readable dimension text:
+- [x] Piece borders and styling (stroke, shadow)
+- [x] Readable dimension text:
   - Font size based on zoom level
   - Contrast with background
   - Abbreviate if needed (e.g., "800×500")
-- [ ] Grid or background pattern (optional)
-- [ ] Legend showing color meanings
-- [ ] Canvas background color
+- [x] Grid or background pattern (optional)
+- [x] Legend showing color meanings
+- [x] Canvas background color
 
 #### 3.6 Integration
-- [ ] Connect CutVisualizer to cabinet store
-- [ ] Update visualization automatically when cut list changes
-- [ ] Add to cabinet calculator page layout (side-by-side with forms)
-- [ ] Handle empty state (no pieces to visualize)
-- [ ] Loading state during rendering
+- [x] Connect CutVisualizer to cabinet store
+- [x] Update visualization automatically when cut list changes
+- [x] Add to cabinet calculator page layout (side-by-side with forms)
+- [x] Handle empty state (no pieces to visualize)
+- [x] Loading state during rendering
 
 ### Deliverable: ✅ Visual canvas showing cut pieces with zoom/pan controls and color-coded parts
 
