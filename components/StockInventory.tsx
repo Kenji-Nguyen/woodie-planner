@@ -13,27 +13,32 @@ export default function StockInventory() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editWidth, setEditWidth] = useState("");
   const [editHeight, setEditHeight] = useState("");
+  const [editThickness, setEditThickness] = useState("18");
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
-  const handleEdit = (id: string, width: number, height: number) => {
+  const handleEdit = (id: string, width: number, height: number, thickness: number) => {
     setEditingId(id);
     setEditWidth(width.toString());
     setEditHeight(height.toString());
+    setEditThickness(thickness.toString());
   };
 
   const handleSaveEdit = (id: string) => {
     const widthNum = parseFloat(editWidth);
     const heightNum = parseFloat(editHeight);
+    const thicknessNum = parseInt(editThickness);
 
     if (
       !isNaN(widthNum) &&
       !isNaN(heightNum) &&
+      !isNaN(thicknessNum) &&
       widthNum >= 100 &&
       heightNum >= 100 &&
       widthNum <= 5000 &&
-      heightNum <= 5000
+      heightNum <= 5000 &&
+      [12, 15, 18].includes(thicknessNum)
     ) {
-      updateStock(id, widthNum, heightNum);
+      updateStock(id, widthNum, heightNum, thicknessNum);
       setEditingId(null);
     }
   };
@@ -139,7 +144,7 @@ export default function StockInventory() {
             {editingId === piece.id ? (
               // Edit Mode
               <div className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-3">
                   <input
                     type="number"
                     value={editWidth}
@@ -158,6 +163,15 @@ export default function StockInventory() {
                     min="100"
                     max="5000"
                   />
+                  <select
+                    value={editThickness}
+                    onChange={(e) => setEditThickness(e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="12">12mm</option>
+                    <option value="15">15mm</option>
+                    <option value="18">18mm</option>
+                  </select>
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -181,10 +195,13 @@ export default function StockInventory() {
                   <div className="font-medium text-gray-900">
                     {formatDimension(piece.width)} × {formatDimension(piece.height)} mm
                   </div>
-                  <div className="text-sm text-gray-500 mt-1">
-                    Area: {calculateArea(piece.width, piece.height)}
+                  <div className="text-sm text-gray-500 mt-1 flex items-center flex-wrap gap-2">
+                    <span>Area: {calculateArea(piece.width, piece.height)}</span>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                      {piece.thickness}mm
+                    </span>
                     <span
-                      className={`ml-3 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                      className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                         piece.available
                           ? "bg-green-100 text-green-800"
                           : "bg-gray-100 text-gray-800"
@@ -196,7 +213,7 @@ export default function StockInventory() {
                 </div>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => handleEdit(piece.id, piece.width, piece.height)}
+                    onClick={() => handleEdit(piece.id, piece.width, piece.height, piece.thickness)}
                     className="px-3 py-1.5 text-sm text-blue-600 hover:text-blue-700 font-medium"
                   >
                     Edit

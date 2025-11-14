@@ -37,7 +37,16 @@ export const PANEL_COLORS: Record<PieceCategory, string> = {
  * @returns Array of Panel3D objects representing each panel
  */
 export function calculatePanelPositions(config: CabinetConfig): Panel3D[] {
-  const { width, depth, height, thickness, includeBack } = config;
+  const {
+    width,
+    depth,
+    height,
+    thickness,
+    includeBack,
+    shelfMode,
+    autoShelfCount,
+    manualShelves,
+  } = config;
   const panels: Panel3D[] = [];
 
   // Top panel: full width and depth, positioned at top
@@ -94,6 +103,41 @@ export function calculatePanelPositions(config: CabinetConfig): Panel3D[] {
       position: [0, 0, -depth / 2 + thickness / 2],
       dimensions: [width - 2 * thickness, height - 2 * thickness, thickness],
       color: PANEL_COLORS.back,
+    });
+  }
+
+  // Shelves: positioned between sides, accounting for back panel
+  const shelfWidth = width - 2 * thickness;
+  const shelfDepth = includeBack ? depth - thickness : depth;
+  const backOffset = includeBack ? thickness / 2 : 0;
+
+  if (shelfMode === "auto" && autoShelfCount && autoShelfCount > 0) {
+    // Auto mode: evenly space shelves
+    const spacing = height / (autoShelfCount + 1);
+    for (let i = 1; i <= autoShelfCount; i++) {
+      const positionFromBottom = i * spacing;
+      const yPosition = -height / 2 + positionFromBottom;
+
+      panels.push({
+        category: "shelf",
+        name: `Shelf ${i}`,
+        position: [0, yPosition, backOffset],
+        dimensions: [shelfWidth, thickness, shelfDepth],
+        color: PANEL_COLORS.shelf,
+      });
+    }
+  } else if (shelfMode === "manual" && manualShelves && manualShelves.length > 0) {
+    // Manual mode: use specified positions and thicknesses
+    manualShelves.forEach((shelf, index) => {
+      const yPosition = -height / 2 + shelf.position;
+
+      panels.push({
+        category: "shelf",
+        name: `Shelf ${index + 1}`,
+        position: [0, yPosition, backOffset],
+        dimensions: [shelfWidth, shelf.thickness, shelfDepth],
+        color: PANEL_COLORS.shelf,
+      });
     });
   }
 

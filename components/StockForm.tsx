@@ -7,6 +7,7 @@ import { validateStockDimensions } from "@/lib/utils";
 export default function StockForm() {
   const [width, setWidth] = useState("");
   const [height, setHeight] = useState("");
+  const [thickness, setThickness] = useState("18"); // Default to 18mm
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
@@ -20,6 +21,7 @@ export default function StockForm() {
     // Parse values
     const widthNum = parseFloat(width);
     const heightNum = parseFloat(height);
+    const thicknessNum = parseInt(thickness);
 
     // Validate using utility function
     const validation = validateStockDimensions(widthNum, heightNum);
@@ -29,16 +31,17 @@ export default function StockForm() {
       return;
     }
 
-    // Add stock piece
-    addStock(widthNum, heightNum);
+    // Add stock piece with thickness
+    addStock(widthNum, heightNum, thicknessNum);
 
     // Show success feedback
     setSuccess(true);
     setTimeout(() => setSuccess(false), 3000);
 
-    // Clear form
+    // Clear form (reset thickness to default)
     setWidth("");
     setHeight("");
+    setThickness("18");
   };
 
   return (
@@ -48,7 +51,7 @@ export default function StockForm() {
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Width Input */}
           <div>
             <label
@@ -89,6 +92,27 @@ export default function StockForm() {
               max="5000"
               step="0.01"
             />
+          </div>
+
+          {/* Thickness Dropdown */}
+          <div>
+            <label
+              htmlFor="stock-thickness"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Thickness
+            </label>
+            <select
+              id="stock-thickness"
+              value={thickness}
+              onChange={(e) => setThickness(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+            >
+              <option value="12">12mm</option>
+              <option value="15">15mm</option>
+              <option value="18">18mm</option>
+            </select>
           </div>
         </div>
 

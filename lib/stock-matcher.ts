@@ -37,35 +37,70 @@ export function matchPiecesToStock(
   }
 
   const layouts: CutLayout[] = [];
-  let remainingPieces = [...cutPieces];
+  let allUnmatched: CutPiece[] = [];
   const availableStock = stockPieces.filter((s) => s.available);
 
-  // Sort stock by area (largest first) for better packing
-  const sortedStock = [...availableStock].sort(
-    (a, b) => b.width * b.height - a.width * a.height
-  );
-
-  // Try to pack pieces into each stock piece
-  for (const stock of sortedStock) {
-    if (remainingPieces.length === 0) break;
-
-    // Attempt to pack remaining pieces into this stock
-    const result = packPiecesIntoStock(remainingPieces, stock, allowRotation);
-
-    if (result.packedPieces.length > 0) {
-      // Add cut sequence
-      const piecesWithSequence = calculateCutSequence(result.packedPieces);
-
-      // Create layout for this stock piece
-      layouts.push({
-        stockPieceId: stock.id,
-        cuts: piecesWithSequence,
-        wastePercentage: result.wastePercentage,
-      });
-
-      // Update remaining pieces
-      remainingPieces = result.unpackedPieces;
+  // Group cut pieces by thickness
+  const piecesByThickness = cutPieces.reduce((acc, piece) => {
+    if (!acc[piece.thickness]) {
+      acc[piece.thickness] = [];
     }
+    acc[piece.thickness].push(piece);
+    return acc;
+  }, {} as Record<number, CutPiece[]>);
+
+  // Group stock by thickness
+  const stockByThickness = availableStock.reduce((acc, stock) => {
+    if (!acc[stock.thickness]) {
+      acc[stock.thickness] = [];
+    }
+    acc[stock.thickness].push(stock);
+    return acc;
+  }, {} as Record<number, StockPiece[]>);
+
+  // Process each thickness separately
+  for (const thickness in piecesByThickness) {
+    const piecesForThickness = piecesByThickness[thickness];
+    const stockForThickness = stockByThickness[thickness] || [];
+
+    if (stockForThickness.length === 0) {
+      // No stock available for this thickness, add to unmatched
+      allUnmatched.push(...piecesForThickness);
+      continue;
+    }
+
+    let remainingPieces = [...piecesForThickness];
+
+    // Sort stock by area (largest first) for better packing
+    const sortedStock = [...stockForThickness].sort(
+      (a, b) => b.width * b.height - a.width * a.height
+    );
+
+    // Try to pack pieces into each stock piece
+    for (const stock of sortedStock) {
+      if (remainingPieces.length === 0) break;
+
+      // Attempt to pack remaining pieces into this stock
+      const result = packPiecesIntoStock(remainingPieces, stock, allowRotation);
+
+      if (result.packedPieces.length > 0) {
+        // Add cut sequence
+        const piecesWithSequence = calculateCutSequence(result.packedPieces);
+
+        // Create layout for this stock piece
+        layouts.push({
+          stockPieceId: stock.id,
+          cuts: piecesWithSequence,
+          wastePercentage: result.wastePercentage,
+        });
+
+        // Update remaining pieces
+        remainingPieces = result.unpackedPieces;
+      }
+    }
+
+    // Add any remaining pieces for this thickness to unmatched
+    allUnmatched.push(...remainingPieces);
   }
 
   // Calculate total waste percentage
@@ -94,7 +129,7 @@ export function matchPiecesToStock(
 
   return {
     layouts,
-    unmatchedPieces: remainingPieces,
+    unmatchedPieces: allUnmatched,
     totalWastePercentage,
     stockUsed: layouts.length,
   };

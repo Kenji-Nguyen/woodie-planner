@@ -10,6 +10,7 @@ import { useState } from "react";
 import { useCabinetStoreCompat, defaultConfig } from "@/store/cabinet-store";
 import { validateCabinetConfig } from "@/lib/utils";
 import type { CabinetConfig } from "@/lib/types";
+import ShelfManager from "@/components/ShelfManager";
 
 export default function CabinetForm() {
   const { setCabinetConfig, generateCutList } = useCabinetStoreCompat();
@@ -170,6 +171,36 @@ export default function CabinetForm() {
             >
               Include back panel
             </label>
+          </div>
+
+          {/* Number of Shelves */}
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label
+                htmlFor="shelfCount"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Number of Shelves
+              </label>
+              <ShelfManager />
+            </div>
+            <input
+              type="number"
+              id="shelfCount"
+              value={formData.autoShelfCount || 0}
+              onChange={(e) => {
+                const count = parseInt(e.target.value) || 0;
+                handleInputChange("autoShelfCount", Math.max(0, Math.min(count, 20)));
+                handleInputChange("shelfMode", "auto");
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="0"
+              min="0"
+              max="20"
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Shelves will be evenly spaced. Use manual mode for custom positions.
+            </p>
           </div>
         </div>
 

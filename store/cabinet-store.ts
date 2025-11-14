@@ -179,6 +179,12 @@ export const useCabinetStoreCompat = () => {
         store.addCabinet("Cabinet 1", config);
       }
     },
+    updateConfig: (updates: Partial<CabinetConfig>) => {
+      if (activeCabinet) {
+        const newConfig = { ...activeCabinet.config, ...updates };
+        store.updateCabinet(activeCabinet.id, newConfig);
+      }
+    },
     generateCutList: () => {
       if (activeCabinet) {
         store.generateCutListForCabinet(activeCabinet.id);

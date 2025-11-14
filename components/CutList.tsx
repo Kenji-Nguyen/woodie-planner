@@ -49,19 +49,42 @@ export default function CutList() {
       <h2 className="text-xl font-semibold mb-4">Cut List</h2>
 
       {/* Summary Section */}
-      <div className="grid grid-cols-2 gap-4 mb-6 p-4 bg-gray-50 rounded-md">
-        <div>
-          <p className="text-sm text-gray-600">Total Pieces</p>
-          <p className="text-2xl font-semibold text-gray-900">
-            {summary.totalPieces}
-          </p>
+      <div className="mb-6 p-4 bg-gray-50 rounded-md">
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <p className="text-sm text-gray-600">Total Pieces</p>
+            <p className="text-2xl font-semibold text-gray-900">
+              {summary.totalPieces}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-600">Total Area</p>
+            <p className="text-2xl font-semibold text-gray-900">
+              {formatArea(summary.totalArea)}
+            </p>
+          </div>
         </div>
-        <div>
-          <p className="text-sm text-gray-600">Total Area</p>
-          <p className="text-2xl font-semibold text-gray-900">
-            {formatArea(summary.totalArea)}
-          </p>
-        </div>
+
+        {/* Area by Thickness */}
+        {Object.keys(summary.areaByThickness).length > 1 && (
+          <div className="pt-3 border-t border-gray-200">
+            <p className="text-xs font-medium text-gray-600 mb-2">
+              Material Area by Thickness:
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {Object.entries(summary.areaByThickness).map(
+                ([thickness, area]) => (
+                  <span
+                    key={thickness}
+                    className="inline-flex items-center px-2 py-1 rounded text-xs bg-gray-200 text-gray-800"
+                  >
+                    {thickness}mm: {formatArea(area as number)}
+                  </span>
+                )
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Cut List Table */}
@@ -85,6 +108,12 @@ export default function CutList() {
                 scope="col"
                 className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
+                Thickness
+              </th>
+              <th
+                scope="col"
+                className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
                 Quantity
               </th>
               <th
@@ -103,6 +132,11 @@ export default function CutList() {
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
                   {formatDimensions(piece.width, piece.height)}
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                    {piece.thickness}mm
+                  </span>
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
                   {piece.quantity}

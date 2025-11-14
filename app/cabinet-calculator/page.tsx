@@ -62,71 +62,69 @@ export default function CabinetCalculatorPage() {
 
           {/* Tab 1: Cabinet Design */}
           <TabsContent value="design" className="space-y-8">
-            {/* Cabinet Form & Cut List */}
+            {/* Cabinet Form & 3D Preview Side-by-Side */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Left Column - Form */}
               <div>
                 <CabinetForm />
+
+                {/* Info Section */}
+                <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h3 className="text-sm font-semibold text-blue-900 mb-2">
+                    How it works
+                  </h3>
+                  <ul className="text-sm text-blue-800 space-y-1">
+                    <li>
+                      • Enter your cabinet dimensions (width, depth, height) in
+                      millimeters
+                    </li>
+                    <li>• Select your material thickness (12mm, 15mm, or 18mm)</li>
+                    <li>
+                      • Choose whether to include a back panel or leave it open-backed
+                    </li>
+                    <li>
+                      • Click &quot;Generate Cut List&quot; to see all pieces you need
+                      to cut
+                    </li>
+                    <li>
+                      • Construction method: Butt-joint (sides sit between top and
+                      bottom)
+                    </li>
+                  </ul>
+                </div>
               </div>
 
-              {/* Right Column - Cut List */}
+              {/* Right Column - 3D Preview */}
               <div>
-                <CutList />
+                <div className="mb-4">
+                  <h2 className="text-xl font-bold text-gray-900">
+                    3D Preview
+                  </h2>
+                  <p className="text-gray-600 text-sm mt-1">
+                    Visualize your cabinet in 3D with realistic dimensions
+                  </p>
+                </div>
+
+                <Cabinet3DSection />
+
+                {/* 3D Preview Info Section */}
+                <div className="mt-4 bg-purple-50 border border-purple-200 rounded-lg p-4">
+                  <h3 className="text-xs font-semibold text-purple-900 mb-2">
+                    Controls
+                  </h3>
+                  <ul className="text-xs text-purple-800 space-y-0.5">
+                    <li>• Left-click + drag to rotate</li>
+                    <li>• Right-click + drag to pan</li>
+                    <li>• Scroll to zoom</li>
+                    <li>• Hover over panels for details</li>
+                  </ul>
+                </div>
               </div>
             </div>
 
-            {/* Info Section */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <h3 className="text-sm font-semibold text-blue-900 mb-2">
-                How it works
-              </h3>
-              <ul className="text-sm text-blue-800 space-y-1">
-                <li>
-                  • Enter your cabinet dimensions (width, depth, height) in
-                  millimeters
-                </li>
-                <li>• Select your material thickness (12mm, 15mm, or 18mm)</li>
-                <li>
-                  • Choose whether to include a back panel or leave it open-backed
-                </li>
-                <li>
-                  • Click &quot;Generate Cut List&quot; to see all pieces you need
-                  to cut
-                </li>
-                <li>
-                  • Construction method: Butt-joint (sides sit between top and
-                  bottom)
-                </li>
-              </ul>
-            </div>
-
-            {/* 3D Cabinet Preview Section */}
+            {/* Cut List Below - Full Width */}
             <div>
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">
-                  3D Cabinet Preview
-                </h2>
-                <p className="text-gray-600 mt-1">
-                  Visualize your cabinet in 3D with realistic thickness and dimensions
-                </p>
-              </div>
-
-              <Cabinet3DSection />
-
-              {/* 3D Preview Info Section */}
-              <div className="mt-8 bg-purple-50 border border-purple-200 rounded-lg p-6">
-                <h3 className="text-sm font-semibold text-purple-900 mb-2">
-                  About 3D Preview
-                </h3>
-                <ul className="text-sm text-purple-800 space-y-1">
-                  <li>• Rotate the view by clicking and dragging (left mouse button)</li>
-                  <li>• Pan the view by right-clicking and dragging</li>
-                  <li>• Zoom in/out using the mouse scroll wheel</li>
-                  <li>• Hover over panels to see their names and dimensions</li>
-                  <li>• Toggle dimensions and grid visibility with the control buttons</li>
-                  <li>• All measurements shown are in millimeters (or meters for larger dimensions)</li>
-                </ul>
-              </div>
+              <CutList />
             </div>
           </TabsContent>
 

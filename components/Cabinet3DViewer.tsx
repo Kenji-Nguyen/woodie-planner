@@ -15,7 +15,7 @@ export function Cabinet3DViewer({ config }: Cabinet3DViewerProps) {
   const [showGrid, setShowGrid] = useState(true);
 
   return (
-    <div className="relative w-full h-[80vh] bg-white rounded-lg overflow-hidden border border-gray-300">
+    <div className="relative w-full h-[600px] bg-white rounded-lg overflow-hidden border border-gray-300">
       {/* Canvas */}
       <Canvas
         gl={{ antialias: true, alpha: true }}

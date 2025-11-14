@@ -31,12 +31,5 @@ export default function Cabinet3DSection() {
     );
   }
 
-  return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        3D Cabinet Preview
-      </h3>
-      <Cabinet3DViewer config={config} />
-    </div>
-  );
+  return <Cabinet3DViewer config={config} />;
 }

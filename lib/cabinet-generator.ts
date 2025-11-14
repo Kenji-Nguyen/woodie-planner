@@ -17,12 +17,22 @@ import { generateId } from "./utils";
  * - Left Side: D × (H - 2T) (qty: 1)
  * - Right Side: D × (H - 2T) (qty: 1)
  * - Back: (W - 2T) × (H - 2T) (qty: 1) [optional]
+ * - Shelves: Based on mode (auto or manual)
  *
  * @param config - cabinet configuration
  * @returns array of cut pieces
  */
 export function generateCutList(config: CabinetConfig): CutPiece[] {
-  const { width, depth, height, thickness, includeBack } = config;
+  const {
+    width,
+    depth,
+    height,
+    thickness,
+    includeBack,
+    shelfMode,
+    manualShelves,
+    autoShelfCount,
+  } = config;
   const pieces: CutPiece[] = [];
 
   // Top piece
@@ -33,6 +43,7 @@ export function generateCutList(config: CabinetConfig): CutPiece[] {
     height: depth,
     quantity: 1,
     category: "top",
+    thickness: thickness,
   });
 
   // Bottom piece
@@ -43,6 +54,7 @@ export function generateCutList(config: CabinetConfig): CutPiece[] {
     height: depth,
     quantity: 1,
     category: "bottom",
+    thickness: thickness,
   });
 
   // Left side piece
@@ -54,6 +66,7 @@ export function generateCutList(config: CabinetConfig): CutPiece[] {
     height: height - 2 * thickness,
     quantity: 1,
     category: "side",
+    thickness: thickness,
   });
 
   // Right side piece
@@ -64,6 +77,7 @@ export function generateCutList(config: CabinetConfig): CutPiece[] {
     height: height - 2 * thickness,
     quantity: 1,
     category: "side",
+    thickness: thickness,
   });
 
   // Back piece (optional)
@@ -75,6 +89,42 @@ export function generateCutList(config: CabinetConfig): CutPiece[] {
       height: height - 2 * thickness,
       quantity: 1,
       category: "back",
+      thickness: thickness,
+    });
+  }
+
+  // Generate shelves based on mode
+  if (shelfMode === "auto" && autoShelfCount && autoShelfCount > 0) {
+    // Auto mode: evenly space shelves
+    const shelfWidth = width - 2 * thickness; // Between sides
+    const shelfDepth = includeBack ? depth - thickness : depth; // Account for back if present
+
+    for (let i = 1; i <= autoShelfCount; i++) {
+      pieces.push({
+        id: generateId(),
+        name: `Shelf ${i}`,
+        width: shelfWidth,
+        height: shelfDepth,
+        quantity: 1,
+        category: "shelf",
+        thickness: thickness, // Default to cabinet thickness
+      });
+    }
+  } else if (shelfMode === "manual" && manualShelves && manualShelves.length > 0) {
+    // Manual mode: use specified shelves
+    manualShelves.forEach((shelf, index) => {
+      const shelfWidth = width - 2 * thickness; // Between sides
+      const shelfDepth = includeBack ? depth - thickness : depth; // Account for back if present
+
+      pieces.push({
+        id: generateId(),
+        name: `Shelf ${index + 1}`,
+        width: shelfWidth,
+        height: shelfDepth,
+        quantity: 1,
+        category: "shelf",
+        thickness: shelf.thickness,
+      });
     });
   }
 
@@ -107,6 +157,16 @@ export function countPieces(pieces: CutPiece[]): number {
  * @returns summary object
  */
 export function getCutListSummary(pieces: CutPiece[]) {
+  // Group pieces by thickness for area calculation
+  const areaByThickness = pieces.reduce(
+    (acc, piece) => {
+      const area = piece.width * piece.height * piece.quantity;
+      acc[piece.thickness] = (acc[piece.thickness] || 0) + area;
+      return acc;
+    },
+    {} as Record<number, number>
+  );
+
   return {
     totalPieces: countPieces(pieces),
     totalArea: calculateTotalArea(pieces),
@@ -118,5 +178,6 @@ export function getCutListSummary(pieces: CutPiece[]) {
       },
       {} as Record<string, number>
     ),
+    areaByThickness, // Area needed for each thickness
   };
 }

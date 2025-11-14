@@ -15,9 +15,9 @@ interface StockStore {
   isOptimizing: boolean;
 
   // Actions
-  addStock: (width: number, height: number) => void;
+  addStock: (width: number, height: number, thickness: number) => void;
   removeStock: (id: string) => void;
-  updateStock: (id: string, width: number, height: number) => void;
+  updateStock: (id: string, width: number, height: number, thickness: number) => void;
   clearStock: () => void;
   toggleAvailability: (id: string) => void;
 
@@ -44,11 +44,12 @@ export const useStockStore = create<StockStore>()(
       isOptimizing: false,
 
       // Add a new stock piece
-      addStock: (width: number, height: number) => {
+      addStock: (width: number, height: number, thickness: number) => {
         const newPiece: StockPiece = {
           id: generateId(),
           width,
           height,
+          thickness,
           available: true,
         };
 
@@ -65,10 +66,10 @@ export const useStockStore = create<StockStore>()(
       },
 
       // Update dimensions of an existing stock piece
-      updateStock: (id: string, width: number, height: number) => {
+      updateStock: (id: string, width: number, height: number, thickness: number) => {
         set((state) => ({
           stockPieces: state.stockPieces.map((piece) =>
-            piece.id === id ? { ...piece, width, height } : piece
+            piece.id === id ? { ...piece, width, height, thickness } : piece
           ),
         }));
       },
