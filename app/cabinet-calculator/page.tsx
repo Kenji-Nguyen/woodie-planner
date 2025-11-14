@@ -9,6 +9,8 @@ import CutList from "@/components/CutList";
 import CutVisualizer from "@/components/CutVisualizer";
 import StockForm from "@/components/StockForm";
 import StockInventory from "@/components/StockInventory";
+import OptimizationSettings from "@/components/OptimizationSettings";
+import OptimizationResults from "@/components/OptimizationResults";
 import Link from "next/link";
 
 export const metadata = {
@@ -132,8 +134,53 @@ export default function CabinetCalculatorPage() {
               <li>
                 • Your stock inventory is saved locally in your browser
               </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Cut Optimization Section */}
+        <div className="mt-12">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Cut Optimization
+            </h2>
+            <p className="text-gray-600 mt-1">
+              Optimize how to cut your cabinet pieces from your stock inventory
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Left Column - Optimization Settings */}
+            <div>
+              <OptimizationSettings />
+            </div>
+
+            {/* Right Column - Optimization Results */}
+            <div>
+              <OptimizationResults />
+            </div>
+          </div>
+
+          {/* Optimization Info Section */}
+          <div className="mt-8 bg-green-50 border border-green-200 rounded-lg p-6">
+            <h3 className="text-sm font-semibold text-green-900 mb-2">
+              How Optimization Works
+            </h3>
+            <ul className="text-sm text-green-800 space-y-1">
               <li>
-                • In the next phase, you&apos;ll be able to optimize cuts from your stock
+                • The optimizer uses bin packing algorithm to fit pieces onto your stock
+              </li>
+              <li>
+                • <strong>Minimize Waste</strong>: Best material utilization with 90° rotation allowed
+              </li>
+              <li>
+                • <strong>Simplify Cuts</strong>: Easier cutting patterns without rotation
+              </li>
+              <li>
+                • View optimized layouts on the visualization above with cut sequences
+              </li>
+              <li>
+                • Numbers on pieces show the order of cuts (guillotine cutting pattern)
               </li>
             </ul>
           </div>

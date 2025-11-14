@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Stage, Layer, Rect, Text, Group } from "react-konva";
 import { useCabinetStore } from "@/store/cabinet-store";
+import { useStockStore } from "@/store/stock-store";
 import {
   createSimpleLayout,
   calculateBoundingBox,
@@ -13,20 +14,29 @@ import {
 
 export default function CutVisualizer() {
   const cutList = useCabinetStore((state) => state.cutList);
+  const stockPieces = useStockStore((state) => state.stockPieces);
+  const optimizationResults = useStockStore(
+    (state) => state.optimizationResults
+  );
+
   const [positions, setPositions] = useState<LayoutPosition[]>([]);
   const [scale, setScale] = useState(1);
   const [stageSize, setStageSize] = useState({ width: 800, height: 600 });
+  const [selectedStockIndex, setSelectedStockIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Update layout when cut list changes
+  // Determine which mode we're in
+  const hasOptimizationResults = optimizationResults && optimizationResults.length > 0;
+
+  // Update layout when cut list changes (preview mode)
   useEffect(() => {
-    if (cutList.length > 0) {
+    if (!hasOptimizationResults && cutList.length > 0) {
       const layout = createSimpleLayout(cutList, 1200, 20);
       setPositions(layout);
-    } else {
+    } else if (!hasOptimizationResults) {
       setPositions([]);
     }
-  }, [cutList]);
+  }, [cutList, hasOptimizationResults]);
 
   // Handle responsive canvas sizing
   useEffect(() => {
@@ -57,16 +67,28 @@ export default function CutVisualizer() {
   };
 
   const handleFitToScreen = () => {
-    if (positions.length === 0) return;
-
-    const boundingBox = calculateBoundingBox(positions);
-    const fitScale = calculateFitScale(
-      boundingBox.width,
-      boundingBox.height,
-      stageSize.width - 40,
-      stageSize.height - 40
-    );
-    setScale(fitScale);
+    if (hasOptimizationResults) {
+      const currentLayout = optimizationResults[selectedStockIndex];
+      const stock = stockPieces.find((s) => s.id === currentLayout?.stockPieceId);
+      if (stock) {
+        const fitScale = calculateFitScale(
+          stock.width + 40,
+          stock.height + 40,
+          stageSize.width - 40,
+          stageSize.height - 40
+        );
+        setScale(fitScale);
+      }
+    } else if (positions.length > 0) {
+      const boundingBox = calculateBoundingBox(positions);
+      const fitScale = calculateFitScale(
+        boundingBox.width,
+        boundingBox.height,
+        stageSize.width - 40,
+        stageSize.height - 40
+      );
+      setScale(fitScale);
+    }
   };
 
   // Empty state
@@ -98,6 +120,217 @@ export default function CutVisualizer() {
     );
   }
 
+  // Render optimized layout on stock
+  if (hasOptimizationResults) {
+    const currentLayout = optimizationResults[selectedStockIndex];
+    const stock = stockPieces.find((s) => s.id === currentLayout?.stockPieceId);
+
+    if (!stock || !currentLayout) return null;
+
+    return (
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        {/* Header with Controls */}
+        <div className="border-b border-gray-200 p-4 bg-gray-50">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">
+                Optimized Cutting Layout
+              </h2>
+              <p className="text-sm text-gray-500 mt-0.5">
+                Stock Piece #{selectedStockIndex + 1} of {optimizationResults.length} •
+                Scale: {Math.round(scale * 100)}%
+              </p>
+            </div>
+
+            {/* Zoom Controls */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleZoomOut}
+                className="px-3 py-1.5 bg-white border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700 text-sm font-medium transition-colors"
+                title="Zoom Out"
+              >
+                −
+              </button>
+              <button
+                onClick={handleZoomReset}
+                className="px-3 py-1.5 bg-white border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700 text-sm font-medium transition-colors"
+                title="Reset Zoom"
+              >
+                Reset
+              </button>
+              <button
+                onClick={handleZoomIn}
+                className="px-3 py-1.5 bg-white border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700 text-sm font-medium transition-colors"
+                title="Zoom In"
+              >
+                +
+              </button>
+              <button
+                onClick={handleFitToScreen}
+                className="px-3 py-1.5 bg-blue-600 border border-blue-600 rounded-md hover:bg-blue-700 text-white text-sm font-medium transition-colors"
+                title="Fit to Screen"
+              >
+                Fit
+              </button>
+            </div>
+          </div>
+
+          {/* Stock Piece Tabs */}
+          {optimizationResults.length > 1 && (
+            <div className="flex gap-2 mt-4 overflow-x-auto">
+              {optimizationResults.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedStockIndex(index)}
+                  className={`px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors ${
+                    index === selectedStockIndex
+                      ? "bg-blue-600 text-white"
+                      : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+                  }`}
+                >
+                  Stock #{index + 1}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Canvas Container */}
+        <div
+          ref={containerRef}
+          className="bg-gray-100 overflow-auto"
+          style={{ height: stageSize.height }}
+        >
+          <Stage
+            width={stageSize.width}
+            height={stageSize.height}
+            scaleX={scale}
+            scaleY={scale}
+          >
+            <Layer>
+              {/* Stock piece background */}
+              <Rect
+                x={20}
+                y={20}
+                width={stock.width}
+                height={stock.height}
+                fill="#F3F4F6"
+                stroke="#9CA3AF"
+                strokeWidth={3}
+                dash={[10, 5]}
+              />
+
+              {/* Stock dimensions label */}
+              <Text
+                x={20}
+                y={5}
+                text={`Stock: ${Math.round(stock.width)}×${Math.round(stock.height)}mm`}
+                fontSize={14}
+                fill="#374151"
+                fontStyle="bold"
+              />
+
+              {/* Render placed pieces */}
+              {currentLayout.cuts.map((cut) => {
+                // Find the original piece to get its category
+                const pieceId = cut.cutPieceId.split("_")[0];
+                const piece = cutList.find((p) => p.id === pieceId);
+                const color = piece ? getCategoryColor(piece.category) : "#6B7280";
+
+                return (
+                  <Group key={cut.cutPieceId} x={20 + cut.x} y={20 + cut.y}>
+                    {/* Rectangle for the piece */}
+                    <Rect
+                      width={cut.width}
+                      height={cut.height}
+                      fill={color}
+                      stroke="#1F2937"
+                      strokeWidth={2}
+                      shadowColor="rgba(0, 0, 0, 0.2)"
+                      shadowBlur={5}
+                      shadowOffset={{ x: 2, y: 2 }}
+                      shadowOpacity={0.3}
+                      cornerRadius={4}
+                    />
+
+                    {/* Cut sequence badge */}
+                    <Group x={8} y={8}>
+                      <Rect
+                        width={24}
+                        height={24}
+                        fill="white"
+                        stroke="#1F2937"
+                        strokeWidth={1}
+                        cornerRadius={12}
+                      />
+                      <Text
+                        text={cut.cutSequence.toString()}
+                        fontSize={12}
+                        fontStyle="bold"
+                        fill="#1F2937"
+                        align="center"
+                        verticalAlign="middle"
+                        width={24}
+                        height={24}
+                      />
+                    </Group>
+
+                    {/* Dimension Label */}
+                    <Text
+                      text={`${Math.round(cut.width)}×${Math.round(cut.height)}${
+                        cut.rotated ? " ↻" : ""
+                      }`}
+                      fontSize={Math.max(12, Math.min(cut.width / 10, 16))}
+                      fill="white"
+                      fontStyle="bold"
+                      align="center"
+                      verticalAlign="middle"
+                      width={cut.width}
+                      y={cut.height / 2 - 8}
+                      shadowColor="rgba(0, 0, 0, 0.5)"
+                      shadowBlur={3}
+                    />
+                  </Group>
+                );
+              })}
+            </Layer>
+          </Stage>
+        </div>
+
+        {/* Legend */}
+        <div className="border-t border-gray-200 p-4 bg-gray-50">
+          <div className="flex items-center gap-6 text-sm flex-wrap">
+            <span className="text-gray-700 font-medium">Legend:</span>
+            <div className="flex items-center gap-2">
+              <div
+                className="w-4 h-4 rounded"
+                style={{ backgroundColor: getCategoryColor("top") }}
+              />
+              <span className="text-gray-600">Top/Bottom</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div
+                className="w-4 h-4 rounded"
+                style={{ backgroundColor: getCategoryColor("side") }}
+              />
+              <span className="text-gray-600">Sides</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div
+                className="w-4 h-4 rounded"
+                style={{ backgroundColor: getCategoryColor("back") }}
+              />
+              <span className="text-gray-600">Back</span>
+            </div>
+            <span className="text-gray-500">• Numbers show cut sequence</span>
+            <span className="text-gray-500">• ↻ indicates 90° rotation</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Render simple preview mode
   return (
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
       {/* Header with Controls */}

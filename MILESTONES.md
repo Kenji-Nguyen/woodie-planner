@@ -2,15 +2,15 @@
 
 ## Project Status
 
-**Current State**: ✅ Milestone 3 Complete! Visual canvas with color-coded pieces, zoom controls, and responsive design is functional.
+**Current State**: ✅ Milestone 4 Complete! Full cut optimization with rotation, visual layouts on stock, waste metrics, and cut sequences is functional.
 
 **Key Decisions**:
 - ✅ Bin Packing Library: `binpackingjs`
 - ✅ Testing: Skip for MVP (focus on features)
 - ✅ Deployment: Handle separately/later
-- ✅ Rotation: Include in Milestone 4 for better optimization
+- ✅ Rotation: Included with 90° rotation support
 
-**Timeline**: 5-6 weeks to production-ready MVP (Weeks 1-3 complete)
+**Timeline**: 5-6 weeks to production-ready MVP (Weeks 1-5 complete - core features done!)
 
 ---
 
@@ -223,7 +223,7 @@
 ### Tasks:
 
 #### 4.1 Bin Packing Integration
-- [ ] Create `lib/bin-packer.ts`:
+- [x] Create `lib/bin-packer.ts`:
   - Wrap binpackingjs library API
   - Implement TypeScript types/interfaces for library
   - Handle rotation (90° piece rotation for better packing)
@@ -233,7 +233,7 @@
   - Add error handling
 
 #### 4.2 Stock Matching Logic
-- [ ] Build `lib/stock-matcher.ts`:
+- [x] Build `lib/stock-matcher.ts`:
   - Match cut pieces to stock inventory
   - Try packing pieces into each stock piece
   - Track which pieces fit on which stock
@@ -242,7 +242,7 @@
   - Prioritize stock usage intelligently
 
 #### 4.3 Optimization Engine
-- [ ] Build `lib/optimizer.ts`:
+- [x] Build `lib/optimizer.ts`:
   - Implement two optimization modes:
     - **Minimize waste**: Best material utilization (pack tightly)
     - **Simplify cuts**: Fewer cut operations, easier execution
@@ -253,7 +253,7 @@
   - Performance optimization (<3 seconds for typical projects)
 
 #### 4.4 Optimization State
-- [ ] Update `store/stock-store.ts`:
+- [x] Update `store/stock-store.ts`:
   - Add `optimizationResults` state (array of CutLayout)
   - Add `optimizationMode` state ('minimize-waste' | 'simplify-cuts')
   - Add `unmatchedPieces` state (pieces that don't fit)
@@ -261,7 +261,7 @@
   - Handle optimization loading state
 
 #### 4.5 Optimization Settings Component
-- [ ] Build `components/OptimizationSettings.tsx`:
+- [x] Build `components/OptimizationSettings.tsx`:
   - Radio buttons: "Minimize Waste" vs "Simplify Cuts"
   - Description of each mode
   - "Run Optimization" button (prominent CTA)
@@ -271,7 +271,7 @@
   - Success message after optimization
 
 #### 4.6 Optimization Results Component
-- [ ] Build `components/OptimizationResults.tsx`:
+- [x] Build `components/OptimizationResults.tsx`:
   - List of stock pieces used (cards or table)
   - For each stock display:
     - Stock dimensions
@@ -286,7 +286,7 @@
   - Empty state (no optimization run yet)
 
 #### 4.7 Update Visualizer for Optimization
-- [ ] Enhance `components/CutVisualizer.tsx`:
+- [x] Enhance `components/CutVisualizer.tsx`:
   - Show stock pieces as large background rectangles
   - Show cut pieces positioned on stock (optimized layout)
   - Display cut sequence numbers on pieces (badges)
@@ -298,7 +298,7 @@
   - Show piece details tooltip on hover
 
 #### 4.8 Integration & Testing
-- [ ] Wire optimization to UI:
+- [x] Wire optimization to UI:
   - Connect "Run Optimization" button
   - Update visualizer when optimization runs
   - Show optimization results component
@@ -306,14 +306,14 @@
     - No stock available (show warning)
     - Pieces too large for stock (show error)
     - No cabinet defined (disable button)
-- [ ] Test various scenarios:
+- [x] Test various scenarios:
   - Small cabinet with large stock (high waste)
   - Large cabinet with small stock (pieces don't fit)
   - Multiple stock pieces required
   - Tight fit scenarios (low waste)
-- [ ] Verify waste calculations are accurate
-- [ ] Test rotation feature thoroughly (90° rotations)
-- [ ] Performance testing (ensure <3s optimization time)
+- [x] Verify waste calculations are accurate
+- [x] Test rotation feature thoroughly (90° rotations)
+- [x] Performance testing (ensure <3s optimization time)
 
 ### Deliverable: ✅ Full optimization with rotation, visual layouts on stock, waste metrics, cut sequences
 
