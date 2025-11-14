@@ -91,6 +91,78 @@ export default function OptimizationSettings() {
               </div>
             </div>
           </label>
+
+          {/* Grain Direction Priority Option */}
+          <label className="flex items-start cursor-pointer">
+            <input
+              type="radio"
+              name="optimizationMode"
+              value="grain-direction"
+              checked={optimizationMode === "grain-direction"}
+              onChange={(e) => setOptimizationMode(e.target.value as any)}
+              className="mt-1 mr-3"
+            />
+            <div>
+              <div className="font-medium text-gray-900">Grain Direction Priority</div>
+              <div className="text-sm text-gray-600">
+                Keeps all pieces in same orientation to respect wood grain. No rotation for better appearance.
+              </div>
+            </div>
+          </label>
+
+          {/* Minimize Stock Sheets Option */}
+          <label className="flex items-start cursor-pointer">
+            <input
+              type="radio"
+              name="optimizationMode"
+              value="minimize-sheets"
+              checked={optimizationMode === "minimize-sheets"}
+              onChange={(e) => setOptimizationMode(e.target.value as any)}
+              className="mt-1 mr-3"
+            />
+            <div>
+              <div className="font-medium text-gray-900">Minimize Stock Sheets</div>
+              <div className="text-sm text-gray-600">
+                Uses fewer stock pieces even if it means slightly more waste. Saves money on sheet costs.
+              </div>
+            </div>
+          </label>
+
+          {/* Largest First Option */}
+          <label className="flex items-start cursor-pointer">
+            <input
+              type="radio"
+              name="optimizationMode"
+              value="largest-first"
+              checked={optimizationMode === "largest-first"}
+              onChange={(e) => setOptimizationMode(e.target.value as any)}
+              className="mt-1 mr-3"
+            />
+            <div>
+              <div className="font-medium text-gray-900">Largest First</div>
+              <div className="text-sm text-gray-600">
+                Prioritizes fitting largest pieces first, then fills gaps with smaller ones. Good general-purpose strategy.
+              </div>
+            </div>
+          </label>
+
+          {/* Edge Alignment Option */}
+          <label className="flex items-start cursor-pointer">
+            <input
+              type="radio"
+              name="optimizationMode"
+              value="edge-alignment"
+              checked={optimizationMode === "edge-alignment"}
+              onChange={(e) => setOptimizationMode(e.target.value as any)}
+              className="mt-1 mr-3"
+            />
+            <div>
+              <div className="font-medium text-gray-900">Edge Alignment</div>
+              <div className="text-sm text-gray-600">
+                Aligns pieces to stock edges when possible. Makes cutting easier with cleaner, straighter cuts.
+              </div>
+            </div>
+          </label>
         </div>
       </div>
 

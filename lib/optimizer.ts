@@ -2,6 +2,10 @@ import type { CutPiece, StockPiece } from "./types";
 import {
   matchPiecesToStock,
   matchPiecesSimpleCuts,
+  matchPiecesGrainDirection,
+  matchPiecesMinimizeSheets,
+  matchPiecesLargestFirst,
+  matchPiecesEdgeAlignment,
   type MatchingResult,
 } from "./stock-matcher";
 
@@ -10,7 +14,13 @@ import {
  * High-level interface for cut optimization
  */
 
-export type OptimizationMode = "minimize-waste" | "simplify-cuts";
+export type OptimizationMode =
+  | "minimize-waste"
+  | "simplify-cuts"
+  | "grain-direction"
+  | "minimize-sheets"
+  | "largest-first"
+  | "edge-alignment";
 
 export interface OptimizationOptions {
   mode: OptimizationMode;
@@ -50,15 +60,36 @@ export function optimizeCuts(
   }
 
   // Run optimization based on mode
-  if (options.mode === "minimize-waste") {
-    return matchPiecesToStock(
-      cutPieces,
-      stockPieces,
-      options.allowRotation ?? true
-    );
-  } else {
-    // simplify-cuts mode
-    return matchPiecesSimpleCuts(cutPieces, stockPieces);
+  switch (options.mode) {
+    case "minimize-waste":
+      return matchPiecesToStock(
+        cutPieces,
+        stockPieces,
+        options.allowRotation ?? true
+      );
+
+    case "simplify-cuts":
+      return matchPiecesSimpleCuts(cutPieces, stockPieces);
+
+    case "grain-direction":
+      return matchPiecesGrainDirection(cutPieces, stockPieces);
+
+    case "minimize-sheets":
+      return matchPiecesMinimizeSheets(cutPieces, stockPieces);
+
+    case "largest-first":
+      return matchPiecesLargestFirst(cutPieces, stockPieces);
+
+    case "edge-alignment":
+      return matchPiecesEdgeAlignment(cutPieces, stockPieces);
+
+    default:
+      // Default to minimize-waste
+      return matchPiecesToStock(
+        cutPieces,
+        stockPieces,
+        options.allowRotation ?? true
+      );
   }
 }
 
