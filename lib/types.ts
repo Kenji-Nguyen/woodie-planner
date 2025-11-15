@@ -8,7 +8,7 @@
 export interface ManualShelf {
   id: string;
   position: number; // mm from bottom
-  thickness: number; // 12, 15, or 18 mm
+  thickness: number; // 12, 15, 16, or 18 mm
 }
 
 /**
@@ -18,13 +18,14 @@ export interface CabinetConfig {
   width: number; // mm
   depth: number; // mm
   height: number; // mm
-  thickness: number; // 12, 15, or 18 mm
+  thickness: number; // 12, 15, 16, or 18 mm
   includeBack: boolean;
   constructionMethod?: "butt-joint" | "flush-edges" | "custom";
   // Shelf configuration
   shelfMode?: "manual" | "auto";
   manualShelves?: ManualShelf[];
   autoShelfCount?: number;
+  autoShelfThickness?: number; // 12, 15, 16, or 18 mm - thickness for auto-generated shelves
   // Door configuration
   includeDoors?: boolean;
   doorCount?: number; // 1 or 2 doors
@@ -49,7 +50,7 @@ export interface CutPiece {
   height: number; // mm
   quantity: number;
   category: PieceCategory;
-  thickness: number; // 12, 15, or 18 mm
+  thickness: number; // 12, 15, 16, or 18 mm
 }
 
 /**
@@ -59,7 +60,7 @@ export interface StockPiece {
   id: string;
   width: number; // mm
   height: number; // mm
-  thickness: number; // 12, 15, or 18 mm
+  thickness: number; // 12, 15, 16, or 18 mm
   available: boolean; // false if fully used
 }
 

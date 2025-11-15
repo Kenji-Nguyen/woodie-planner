@@ -9,6 +9,7 @@ export interface Panel3D {
   position: [number, number, number]; // [x, y, z] in mm
   dimensions: [number, number, number]; // [width, height, depth] in mm
   color: string;
+  thickness: number; // Material thickness in mm
 }
 
 /**
@@ -48,6 +49,7 @@ export function calculatePanelPositions(config: CabinetConfig): Panel3D[] {
     includeBack,
     shelfMode,
     autoShelfCount,
+    autoShelfThickness,
     manualShelves,
   } = config;
   const panels: Panel3D[] = [];
@@ -61,6 +63,7 @@ export function calculatePanelPositions(config: CabinetConfig): Panel3D[] {
     position: [0, height / 2 - thickness / 2, 0],
     dimensions: [width, thickness, depth],
     color: PANEL_COLORS.top,
+    thickness: thickness,
   });
 
   // Bottom panel: full width and depth, positioned at bottom
@@ -72,6 +75,7 @@ export function calculatePanelPositions(config: CabinetConfig): Panel3D[] {
     position: [0, -height / 2 + thickness / 2, 0],
     dimensions: [width, thickness, depth],
     color: PANEL_COLORS.bottom,
+    thickness: thickness,
   });
 
   // Left side panel: fits between top and bottom
@@ -83,6 +87,7 @@ export function calculatePanelPositions(config: CabinetConfig): Panel3D[] {
     position: [-width / 2 + thickness / 2, 0, 0],
     dimensions: [thickness, height - 2 * thickness, depth],
     color: PANEL_COLORS.side,
+    thickness: thickness,
   });
 
   // Right side panel: fits between top and bottom
@@ -94,6 +99,7 @@ export function calculatePanelPositions(config: CabinetConfig): Panel3D[] {
     position: [width / 2 - thickness / 2, 0, 0],
     dimensions: [thickness, height - 2 * thickness, depth],
     color: PANEL_COLORS.side,
+    thickness: thickness,
   });
 
   // Back panel: fits between left and right sides, and top and bottom
@@ -106,6 +112,7 @@ export function calculatePanelPositions(config: CabinetConfig): Panel3D[] {
       position: [0, 0, -depth / 2 + thickness / 2],
       dimensions: [width - 2 * thickness, height - 2 * thickness, thickness],
       color: PANEL_COLORS.back,
+      thickness: thickness,
     });
   }
 
@@ -117,6 +124,8 @@ export function calculatePanelPositions(config: CabinetConfig): Panel3D[] {
   if (shelfMode === "auto" && autoShelfCount && autoShelfCount > 0) {
     // Auto mode: evenly space shelves
     const spacing = height / (autoShelfCount + 1);
+    const shelfThickness = autoShelfThickness || thickness; // Use auto shelf thickness or default to cabinet thickness
+
     for (let i = 1; i <= autoShelfCount; i++) {
       const positionFromBottom = i * spacing;
       const yPosition = -height / 2 + positionFromBottom;
@@ -125,8 +134,9 @@ export function calculatePanelPositions(config: CabinetConfig): Panel3D[] {
         category: "shelf",
         name: `Shelf ${i}`,
         position: [0, yPosition, backOffset],
-        dimensions: [shelfWidth, thickness, shelfDepth],
+        dimensions: [shelfWidth, shelfThickness, shelfDepth],
         color: PANEL_COLORS.shelf,
+        thickness: shelfThickness,
       });
     }
   } else if (shelfMode === "manual" && manualShelves && manualShelves.length > 0) {
@@ -140,6 +150,7 @@ export function calculatePanelPositions(config: CabinetConfig): Panel3D[] {
         position: [0, yPosition, backOffset],
         dimensions: [shelfWidth, shelf.thickness, shelfDepth],
         color: PANEL_COLORS.shelf,
+        thickness: shelf.thickness,
       });
     });
   }
