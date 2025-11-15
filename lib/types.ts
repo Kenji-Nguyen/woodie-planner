@@ -26,12 +26,19 @@ export interface CabinetConfig {
   manualShelves?: ManualShelf[];
   autoShelfCount?: number;
   autoShelfThickness?: number; // 12, 15, 16, or 18 mm - thickness for auto-generated shelves
+  // Door configuration
+  includeDoors?: boolean;
+  doorCount?: number; // 1 or 2 doors
+  // Top configuration
+  includeTop?: boolean; // false for open-top drawers/boxes
+  // Furniture type
+  furnitureType?: "cabinet" | "drawer" | "shelf" | "table" | "bench" | "custom";
 }
 
 /**
  * Category of cabinet piece
  */
-export type PieceCategory = "top" | "bottom" | "side" | "back" | "shelf";
+export type PieceCategory = "top" | "bottom" | "side" | "back" | "shelf" | "door" | "drawer-front" | "tabletop";
 
 /**
  * A single piece that needs to be cut

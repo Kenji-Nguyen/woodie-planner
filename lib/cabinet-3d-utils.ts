@@ -14,7 +14,7 @@ export interface Panel3D {
 
 /**
  * Color mapping for different panel categories
- * (Matching colors from CutVisualizer for consistency)
+ * (Matching colors from layout-helper for consistency)
  */
 export const PANEL_COLORS: Record<PieceCategory, string> = {
   top: "#3b82f6", // blue-500
@@ -22,6 +22,9 @@ export const PANEL_COLORS: Record<PieceCategory, string> = {
   side: "#10b981", // emerald-500
   back: "#f59e0b", // amber-500
   shelf: "#8b5cf6", // violet-500
+  door: "#ec4899", // pink-500
+  "drawer-front": "#f97316", // orange-500
+  tabletop: "#06b6d4", // cyan-500
 };
 
 /**

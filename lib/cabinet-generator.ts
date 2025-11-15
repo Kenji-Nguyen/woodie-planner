@@ -29,6 +29,9 @@ export function generateCutList(config: CabinetConfig): CutPiece[] {
     height,
     thickness,
     includeBack,
+    includeTop = true,
+    includeDoors = false,
+    doorCount = 1,
     shelfMode,
     manualShelves,
     autoShelfCount,
@@ -36,16 +39,18 @@ export function generateCutList(config: CabinetConfig): CutPiece[] {
   } = config;
   const pieces: CutPiece[] = [];
 
-  // Top piece
-  pieces.push({
-    id: generateId(),
-    name: "Top",
-    width: width,
-    height: depth,
-    quantity: 1,
-    category: "top",
-    thickness: thickness,
-  });
+  // Top piece (optional - can be omitted for open-top drawer/box)
+  if (includeTop) {
+    pieces.push({
+      id: generateId(),
+      name: "Top",
+      width: width,
+      height: depth,
+      quantity: 1,
+      category: "top",
+      thickness: thickness,
+    });
+  }
 
   // Bottom piece
   pieces.push({
@@ -92,6 +97,36 @@ export function generateCutList(config: CabinetConfig): CutPiece[] {
       category: "back",
       thickness: thickness,
     });
+  }
+
+  // Door pieces (optional)
+  if (includeDoors) {
+    const doorHeight = height - 2 * thickness; // Account for top and bottom
+    const doorWidth = doorCount === 2
+      ? (width - 2 * thickness - 2) / 2 // Split width for 2 doors with 2mm gap
+      : width - 2 * thickness; // Full width for single door
+
+    pieces.push({
+      id: generateId(),
+      name: doorCount === 2 ? "Door (Left)" : "Door",
+      width: doorWidth,
+      height: doorHeight,
+      quantity: 1,
+      category: "door",
+      thickness: thickness,
+    });
+
+    if (doorCount === 2) {
+      pieces.push({
+        id: generateId(),
+        name: "Door (Right)",
+        width: doorWidth,
+        height: doorHeight,
+        quantity: 1,
+        category: "door",
+        thickness: thickness,
+      });
+    }
   }
 
   // Generate shelves based on mode

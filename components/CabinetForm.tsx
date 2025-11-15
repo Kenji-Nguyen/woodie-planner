@@ -6,32 +6,188 @@
  * Input form for cabinet dimensions and configuration
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCabinetStoreCompat, defaultConfig } from "@/store/cabinet-store";
 import { validateCabinetConfig } from "@/lib/utils";
 import type { CabinetConfig } from "@/lib/types";
 import ShelfManager from "@/components/ShelfManager";
 
+// Furniture type presets
+const FURNITURE_PRESETS = {
+  custom: {
+    name: "Custom",
+    width: 800,
+    depth: 500,
+    height: 1000,
+    thickness: 18,
+    includeBack: true,
+    includeTop: true,
+    furnitureType: "custom" as const,
+  },
+  "base-kitchen": {
+    name: "Base Kitchen Cabinet",
+    width: 600,
+    depth: 600,
+    height: 720,
+    thickness: 18,
+    includeBack: true,
+    includeTop: true,
+    furnitureType: "cabinet" as const,
+  },
+  "wall-kitchen": {
+    name: "Wall Kitchen Cabinet",
+    width: 600,
+    depth: 350,
+    height: 720,
+    thickness: 18,
+    includeBack: true,
+    includeTop: true,
+    furnitureType: "cabinet" as const,
+  },
+  bookshelf: {
+    name: "Bookshelf",
+    width: 800,
+    depth: 300,
+    height: 1800,
+    thickness: 18,
+    includeBack: true,
+    includeTop: true,
+    furnitureType: "shelf" as const,
+  },
+  "simple-table": {
+    name: "Simple Table",
+    width: 1200,
+    depth: 700,
+    height: 750,
+    thickness: 18,
+    includeBack: false,
+    includeTop: true,
+    furnitureType: "table" as const,
+  },
+  "storage-bench": {
+    name: "Storage Bench",
+    width: 1000,
+    depth: 400,
+    height: 450,
+    thickness: 18,
+    includeBack: false,
+    includeTop: true,
+    furnitureType: "bench" as const,
+  },
+  "drawer-unit": {
+    name: "Drawer Unit",
+    width: 400,
+    depth: 500,
+    height: 600,
+    thickness: 18,
+    includeBack: true,
+    includeTop: false,
+    furnitureType: "drawer" as const,
+  },
+  "open-box": {
+    name: "Open Storage Box",
+    width: 600,
+    depth: 400,
+    height: 400,
+    thickness: 15,
+    includeBack: false,
+    includeTop: false,
+    furnitureType: "drawer" as const,
+  },
+  "desk": {
+    name: "Simple Desk",
+    width: 1400,
+    depth: 600,
+    height: 750,
+    thickness: 18,
+    includeBack: false,
+    includeTop: true,
+    furnitureType: "table" as const,
+  },
+  "tv-stand": {
+    name: "TV Stand",
+    width: 1200,
+    depth: 400,
+    height: 500,
+    thickness: 18,
+    includeBack: false,
+    includeTop: true,
+    furnitureType: "cabinet" as const,
+  },
+} as const;
+
+type PresetKey = keyof typeof FURNITURE_PRESETS;
+
+const FORM_STORAGE_KEY = "cabinet-form-data";
+
 export default function CabinetForm() {
   const { setCabinetConfig, generateCutList } = useCabinetStoreCompat();
 
-  const [formData, setFormData] = useState<Partial<CabinetConfig>>({
-    width: defaultConfig.width,
-    depth: defaultConfig.depth,
-    height: defaultConfig.height,
-    thickness: defaultConfig.thickness,
-    includeBack: defaultConfig.includeBack,
-    constructionMethod: defaultConfig.constructionMethod,
+  // Load form data from localStorage on mount
+  const [formData, setFormData] = useState<Partial<CabinetConfig>>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(FORM_STORAGE_KEY);
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          console.error("Failed to parse saved form data:", e);
+        }
+      }
+    }
+    return {
+      width: defaultConfig.width,
+      depth: defaultConfig.depth,
+      height: defaultConfig.height,
+      thickness: defaultConfig.thickness,
+      includeBack: defaultConfig.includeBack,
+      constructionMethod: defaultConfig.constructionMethod,
+    };
   });
 
+  const [selectedPreset, setSelectedPreset] = useState<PresetKey>("custom");
   const [errors, setErrors] = useState<string[]>([]);
+
+  // Save form data to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(formData));
+    }
+  }, [formData]);
 
   const handleInputChange = (
     field: keyof CabinetConfig,
     value: number | boolean | string
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    // When user manually changes values, switch to custom preset
+    setSelectedPreset("custom");
     // Clear errors when user starts typing
+    if (errors.length > 0) {
+      setErrors([]);
+    }
+  };
+
+  const handlePresetChange = (presetKey: PresetKey) => {
+    setSelectedPreset(presetKey);
+    if (presetKey !== "custom") {
+      const preset = FURNITURE_PRESETS[presetKey];
+      setFormData({
+        width: preset.width,
+        depth: preset.depth,
+        height: preset.height,
+        thickness: preset.thickness,
+        includeBack: preset.includeBack,
+        includeTop: preset.includeTop,
+        furnitureType: preset.furnitureType,
+        constructionMethod: defaultConfig.constructionMethod,
+        autoShelfCount: formData.autoShelfCount || 0,
+        shelfMode: formData.shelfMode || "auto",
+        includeDoors: formData.includeDoors || false,
+        doorCount: formData.doorCount || 1,
+      });
+    }
+    // Clear errors when preset changes
     if (errors.length > 0) {
       setErrors([]);
     }
@@ -62,6 +218,31 @@ export default function CabinetForm() {
         <h2 className="text-xl font-semibold mb-4">Cabinet Dimensions</h2>
 
         <div className="space-y-4">
+          {/* Furniture Type Preset Dropdown */}
+          <div>
+            <label
+              htmlFor="furnitureType"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Furniture Type
+            </label>
+            <select
+              id="furnitureType"
+              value={selectedPreset}
+              onChange={(e) => handlePresetChange(e.target.value as PresetKey)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            >
+              {Object.entries(FURNITURE_PRESETS).map(([key, preset]) => (
+                <option key={key} value={key}>
+                  {preset.name}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-xs text-gray-500">
+              Select a preset or choose Custom to enter your own dimensions
+            </p>
+          </div>
+
           {/* Width Input */}
           <div>
             <label
@@ -155,6 +336,25 @@ export default function CabinetForm() {
             </select>
           </div>
 
+          {/* Include Top Checkbox */}
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="includeTop"
+              checked={formData.includeTop ?? true}
+              onChange={(e) =>
+                handleInputChange("includeTop", e.target.checked)
+              }
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            />
+            <label
+              htmlFor="includeTop"
+              className="ml-2 block text-sm text-gray-700"
+            >
+              Include top panel (uncheck for open-top drawer/box)
+            </label>
+          </div>
+
           {/* Include Back Checkbox */}
           <div className="flex items-center">
             <input
@@ -173,6 +373,48 @@ export default function CabinetForm() {
               Include back panel
             </label>
           </div>
+
+          {/* Include Doors Checkbox */}
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="includeDoors"
+              checked={formData.includeDoors ?? false}
+              onChange={(e) =>
+                handleInputChange("includeDoors", e.target.checked)
+              }
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            />
+            <label
+              htmlFor="includeDoors"
+              className="ml-2 block text-sm text-gray-700"
+            >
+              Include doors
+            </label>
+          </div>
+
+          {/* Number of Doors (conditional) */}
+          {formData.includeDoors && (
+            <div>
+              <label
+                htmlFor="doorCount"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Number of Doors
+              </label>
+              <select
+                id="doorCount"
+                value={formData.doorCount || 1}
+                onChange={(e) =>
+                  handleInputChange("doorCount", parseInt(e.target.value))
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value={1}>1 Door</option>
+                <option value={2}>2 Doors</option>
+              </select>
+            </div>
+          )}
 
           {/* Number of Shelves */}
           <div>
