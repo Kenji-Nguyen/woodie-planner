@@ -12,8 +12,8 @@ import { validateCabinetConfig } from "@/lib/utils";
 import type { CabinetConfig } from "@/lib/types";
 import ShelfManager from "@/components/ShelfManager";
 
-// Cabinet type presets
-const CABINET_PRESETS = {
+// Furniture type presets
+const FURNITURE_PRESETS = {
   custom: {
     name: "Custom",
     width: 800,
@@ -21,6 +21,8 @@ const CABINET_PRESETS = {
     height: 1000,
     thickness: 18,
     includeBack: true,
+    includeTop: true,
+    furnitureType: "custom" as const,
   },
   "base-kitchen": {
     name: "Base Kitchen Cabinet",
@@ -29,6 +31,8 @@ const CABINET_PRESETS = {
     height: 720,
     thickness: 18,
     includeBack: true,
+    includeTop: true,
+    furnitureType: "cabinet" as const,
   },
   "wall-kitchen": {
     name: "Wall Kitchen Cabinet",
@@ -37,14 +41,8 @@ const CABINET_PRESETS = {
     height: 720,
     thickness: 18,
     includeBack: true,
-  },
-  "tall-pantry": {
-    name: "Tall Pantry Cabinet",
-    width: 600,
-    depth: 600,
-    height: 2100,
-    thickness: 18,
-    includeBack: true,
+    includeTop: true,
+    furnitureType: "cabinet" as const,
   },
   bookshelf: {
     name: "Bookshelf",
@@ -53,6 +51,58 @@ const CABINET_PRESETS = {
     height: 1800,
     thickness: 18,
     includeBack: true,
+    includeTop: true,
+    furnitureType: "shelf" as const,
+  },
+  "simple-table": {
+    name: "Simple Table",
+    width: 1200,
+    depth: 700,
+    height: 750,
+    thickness: 18,
+    includeBack: false,
+    includeTop: true,
+    furnitureType: "table" as const,
+  },
+  "storage-bench": {
+    name: "Storage Bench",
+    width: 1000,
+    depth: 400,
+    height: 450,
+    thickness: 18,
+    includeBack: false,
+    includeTop: true,
+    furnitureType: "bench" as const,
+  },
+  "drawer-unit": {
+    name: "Drawer Unit",
+    width: 400,
+    depth: 500,
+    height: 600,
+    thickness: 18,
+    includeBack: true,
+    includeTop: false,
+    furnitureType: "drawer" as const,
+  },
+  "open-box": {
+    name: "Open Storage Box",
+    width: 600,
+    depth: 400,
+    height: 400,
+    thickness: 15,
+    includeBack: false,
+    includeTop: false,
+    furnitureType: "drawer" as const,
+  },
+  "desk": {
+    name: "Simple Desk",
+    width: 1400,
+    depth: 600,
+    height: 750,
+    thickness: 18,
+    includeBack: false,
+    includeTop: true,
+    furnitureType: "table" as const,
   },
   "tv-stand": {
     name: "TV Stand",
@@ -61,26 +111,12 @@ const CABINET_PRESETS = {
     height: 500,
     thickness: 18,
     includeBack: false,
-  },
-  "bathroom-vanity": {
-    name: "Bathroom Vanity",
-    width: 900,
-    depth: 500,
-    height: 850,
-    thickness: 18,
-    includeBack: false,
-  },
-  "shoe-cabinet": {
-    name: "Shoe Cabinet",
-    width: 800,
-    depth: 350,
-    height: 1000,
-    thickness: 15,
-    includeBack: true,
+    includeTop: true,
+    furnitureType: "cabinet" as const,
   },
 } as const;
 
-type PresetKey = keyof typeof CABINET_PRESETS;
+type PresetKey = keyof typeof FURNITURE_PRESETS;
 
 const FORM_STORAGE_KEY = "cabinet-form-data";
 
@@ -135,16 +171,20 @@ export default function CabinetForm() {
   const handlePresetChange = (presetKey: PresetKey) => {
     setSelectedPreset(presetKey);
     if (presetKey !== "custom") {
-      const preset = CABINET_PRESETS[presetKey];
+      const preset = FURNITURE_PRESETS[presetKey];
       setFormData({
         width: preset.width,
         depth: preset.depth,
         height: preset.height,
         thickness: preset.thickness,
         includeBack: preset.includeBack,
+        includeTop: preset.includeTop,
+        furnitureType: preset.furnitureType,
         constructionMethod: defaultConfig.constructionMethod,
         autoShelfCount: formData.autoShelfCount || 0,
         shelfMode: formData.shelfMode || "auto",
+        includeDoors: formData.includeDoors || false,
+        doorCount: formData.doorCount || 1,
       });
     }
     // Clear errors when preset changes
@@ -178,21 +218,21 @@ export default function CabinetForm() {
         <h2 className="text-xl font-semibold mb-4">Cabinet Dimensions</h2>
 
         <div className="space-y-4">
-          {/* Cabinet Type Preset Dropdown */}
+          {/* Furniture Type Preset Dropdown */}
           <div>
             <label
-              htmlFor="cabinetType"
+              htmlFor="furnitureType"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Cabinet Type
+              Furniture Type
             </label>
             <select
-              id="cabinetType"
+              id="furnitureType"
               value={selectedPreset}
               onChange={(e) => handlePresetChange(e.target.value as PresetKey)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             >
-              {Object.entries(CABINET_PRESETS).map(([key, preset]) => (
+              {Object.entries(FURNITURE_PRESETS).map(([key, preset]) => (
                 <option key={key} value={key}>
                   {preset.name}
                 </option>
@@ -295,6 +335,25 @@ export default function CabinetForm() {
             </select>
           </div>
 
+          {/* Include Top Checkbox */}
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="includeTop"
+              checked={formData.includeTop ?? true}
+              onChange={(e) =>
+                handleInputChange("includeTop", e.target.checked)
+              }
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            />
+            <label
+              htmlFor="includeTop"
+              className="ml-2 block text-sm text-gray-700"
+            >
+              Include top panel (uncheck for open-top drawer/box)
+            </label>
+          </div>
+
           {/* Include Back Checkbox */}
           <div className="flex items-center">
             <input
@@ -313,6 +372,48 @@ export default function CabinetForm() {
               Include back panel
             </label>
           </div>
+
+          {/* Include Doors Checkbox */}
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="includeDoors"
+              checked={formData.includeDoors ?? false}
+              onChange={(e) =>
+                handleInputChange("includeDoors", e.target.checked)
+              }
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            />
+            <label
+              htmlFor="includeDoors"
+              className="ml-2 block text-sm text-gray-700"
+            >
+              Include doors
+            </label>
+          </div>
+
+          {/* Number of Doors (conditional) */}
+          {formData.includeDoors && (
+            <div>
+              <label
+                htmlFor="doorCount"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Number of Doors
+              </label>
+              <select
+                id="doorCount"
+                value={formData.doorCount || 1}
+                onChange={(e) =>
+                  handleInputChange("doorCount", parseInt(e.target.value))
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value={1}>1 Door</option>
+                <option value={2}>2 Doors</option>
+              </select>
+            </div>
+          )}
 
           {/* Number of Shelves */}
           <div>
