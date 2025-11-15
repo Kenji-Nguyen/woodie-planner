@@ -149,6 +149,9 @@ export function getCombinedColor(
     side: { r: 16, g: 185, b: 129 }, // green
     back: { r: 245, g: 158, b: 11 }, // amber
     shelf: { r: 139, g: 92, b: 246 }, // purple
+    door: { r: 236, g: 72, b: 153 }, // pink
+    "drawer-front": { r: 249, g: 115, b: 22 }, // orange
+    tabletop: { r: 6, g: 182, b: 212 }, // cyan
   };
 
   const base = baseColors[category] || { r: 107, g: 115, b: 128 }; // gray default
