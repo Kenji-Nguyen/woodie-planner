@@ -25,12 +25,19 @@ export interface CabinetConfig {
   shelfMode?: "manual" | "auto";
   manualShelves?: ManualShelf[];
   autoShelfCount?: number;
+  // Door configuration
+  includeDoors?: boolean;
+  doorCount?: number; // 1 or 2 doors
+  // Top configuration
+  includeTop?: boolean; // false for open-top drawers/boxes
+  // Furniture type
+  furnitureType?: "cabinet" | "drawer" | "shelf" | "table" | "bench" | "custom";
 }
 
 /**
  * Category of cabinet piece
  */
-export type PieceCategory = "top" | "bottom" | "side" | "back" | "shelf";
+export type PieceCategory = "top" | "bottom" | "side" | "back" | "shelf" | "door" | "drawer-front" | "tabletop";
 
 /**
  * A single piece that needs to be cut

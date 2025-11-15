@@ -46,7 +46,11 @@ export const defaultConfig: CabinetConfig = {
   height: 1000,
   thickness: 18,
   includeBack: true,
+  includeTop: true,
+  includeDoors: false,
+  doorCount: 1,
   constructionMethod: "butt-joint",
+  furnitureType: "custom",
 };
 
 export const useCabinetStore = create<CabinetState>()(

@@ -93,7 +93,7 @@ export function calculateBoundingBox(
 
 /**
  * Get color for a piece category
- * Color scheme for different cabinet parts
+ * Color scheme for different cabinet/furniture parts
  */
 export function getCategoryColor(category: CutPiece["category"]): string {
   const colors = {
@@ -102,6 +102,9 @@ export function getCategoryColor(category: CutPiece["category"]): string {
     side: "#10B981", // green
     back: "#F59E0B", // amber
     shelf: "#8B5CF6", // purple
+    door: "#EC4899", // pink
+    "drawer-front": "#F97316", // orange
+    tabletop: "#06B6D4", // cyan
   };
 
   return colors[category] || "#6B7280"; // gray as default
