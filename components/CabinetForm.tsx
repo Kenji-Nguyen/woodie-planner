@@ -150,6 +150,7 @@ export default function CabinetForm() {
             >
               <option value={12}>12mm</option>
               <option value={15}>15mm</option>
+              <option value={16}>16mm</option>
               <option value={18}>18mm</option>
             </select>
           </div>
@@ -202,6 +203,34 @@ export default function CabinetForm() {
               Shelves will be evenly spaced. Use manual mode for custom positions.
             </p>
           </div>
+
+          {/* Auto Shelf Thickness - Only show when auto shelf count > 0 */}
+          {(formData.autoShelfCount ?? 0) > 0 && formData.shelfMode === "auto" && (
+            <div>
+              <label
+                htmlFor="autoShelfThickness"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Shelf Thickness
+              </label>
+              <select
+                id="autoShelfThickness"
+                value={formData.autoShelfThickness || formData.thickness || 18}
+                onChange={(e) =>
+                  handleInputChange("autoShelfThickness", parseInt(e.target.value))
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value={12}>12mm</option>
+                <option value={15}>15mm</option>
+                <option value={16}>16mm</option>
+                <option value={18}>18mm</option>
+              </select>
+              <p className="mt-1 text-xs text-gray-500">
+                All auto-generated shelves will have this thickness. Defaults to cabinet thickness.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Error Messages */}

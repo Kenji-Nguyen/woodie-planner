@@ -108,14 +108,18 @@ export function validateCabinetConfig(
 
   if (!config.thickness) {
     errors.push("Thickness is required");
-  } else if (![12, 15, 18].includes(config.thickness)) {
-    errors.push("Thickness must be 12mm, 15mm, or 18mm");
+  } else if (![12, 15, 16, 18].includes(config.thickness)) {
+    errors.push("Thickness must be 12mm, 15mm, 16mm, or 18mm");
   }
 
   // Validate shelf configuration
   if (config.shelfMode === "auto" && config.autoShelfCount) {
     if (config.autoShelfCount < 0 || config.autoShelfCount > 20) {
       errors.push("Number of shelves must be between 0 and 20");
+    }
+    // Validate auto shelf thickness if specified
+    if (config.autoShelfThickness && ![12, 15, 16, 18].includes(config.autoShelfThickness)) {
+      errors.push("Auto shelf thickness must be 12mm, 15mm, 16mm, or 18mm");
     }
   }
 
@@ -182,8 +186,8 @@ export function validateShelfPositions(
     const shelfNum = index + 1;
 
     // Check thickness is valid
-    if (![12, 15, 18].includes(shelf.thickness)) {
-      errors.push(`Shelf ${shelfNum}: Thickness must be 12mm, 15mm, or 18mm`);
+    if (![12, 15, 16, 18].includes(shelf.thickness)) {
+      errors.push(`Shelf ${shelfNum}: Thickness must be 12mm, 15mm, 16mm, or 18mm`);
     }
 
     // Check position is within cabinet height

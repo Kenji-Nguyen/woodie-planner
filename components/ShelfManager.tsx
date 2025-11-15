@@ -119,6 +119,39 @@ export default function ShelfManager() {
             Add Manual Shelf
           </Button>
 
+          {/* Set all to same thickness - Only show if there are manual shelves */}
+          {manualShelves.length > 1 && (
+            <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+              <Label className="text-sm font-medium text-blue-900 mb-2 block">
+                Set All Shelves to Same Thickness
+              </Label>
+              <Select
+                onValueChange={(value) => {
+                  const thickness = parseInt(value);
+                  updateConfig({
+                    manualShelves: manualShelves.map((s) => ({
+                      ...s,
+                      thickness,
+                    })),
+                  });
+                }}
+              >
+                <SelectTrigger className="h-10 bg-white">
+                  <SelectValue placeholder="Select thickness for all shelves" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="12">12mm (all shelves)</SelectItem>
+                  <SelectItem value="15">15mm (all shelves)</SelectItem>
+                  <SelectItem value="16">16mm (all shelves)</SelectItem>
+                  <SelectItem value="18">18mm (all shelves)</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="mt-2 text-xs text-blue-800">
+                This will update the thickness of all manual shelves at once.
+              </p>
+            </div>
+          )}
+
           {manualShelves.length === 0 ? (
             <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center">
               <Layers className="mx-auto h-16 w-16 text-gray-300" />
@@ -194,6 +227,7 @@ export default function ShelfManager() {
                             <SelectContent>
                               <SelectItem value="12">12mm</SelectItem>
                               <SelectItem value="15">15mm</SelectItem>
+                              <SelectItem value="16">16mm</SelectItem>
                               <SelectItem value="18">18mm</SelectItem>
                             </SelectContent>
                           </Select>

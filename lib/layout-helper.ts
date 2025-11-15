@@ -7,6 +7,7 @@ export interface LayoutPosition {
   width: number;
   height: number;
   category: CutPiece["category"];
+  thickness: number; // Material thickness in mm
 }
 
 /**
@@ -50,6 +51,7 @@ export function createSimpleLayout(
         width: pieceWidth,
         height: pieceHeight,
         category: piece.category,
+        thickness: piece.thickness,
       });
 
       // Update position for next piece
@@ -105,6 +107,66 @@ export function getCategoryColor(category: CutPiece["category"]): string {
   };
 
   return colors[category] || "#6B7280"; // gray as default
+}
+
+/**
+ * Get color for a piece based on thickness
+ * Color scheme for different material thicknesses
+ *
+ * @param thickness - Material thickness in mm
+ * @returns Hex color code
+ */
+export function getThicknessColor(thickness: number): string {
+  const colors: Record<number, string> = {
+    12: "#EF4444", // red - 12mm
+    15: "#F59E0B", // amber - 15mm
+    16: "#8B5CF6", // purple - 16mm
+    18: "#3B82F6", // blue - 18mm
+  };
+
+  return colors[thickness] || "#6B7280"; // gray as default
+}
+
+/**
+ * Get a combined color that blends category and thickness information
+ * Creates a darker shade for different thicknesses while maintaining category hue
+ *
+ * @param category - Piece category
+ * @param thickness - Material thickness in mm
+ * @returns Hex color code
+ */
+export function getCombinedColor(
+  category: CutPiece["category"],
+  thickness: number
+): string {
+  // Primary color based on category
+  const baseColors = {
+    top: { r: 59, g: 130, b: 246 }, // blue
+    bottom: { r: 59, g: 130, b: 246 }, // blue
+    side: { r: 16, g: 185, b: 129 }, // green
+    back: { r: 245, g: 158, b: 11 }, // amber
+    shelf: { r: 139, g: 92, b: 246 }, // purple
+  };
+
+  const base = baseColors[category] || { r: 107, g: 115, b: 128 }; // gray default
+
+  // Adjust brightness based on thickness
+  const thicknessMultipliers: Record<number, number> = {
+    12: 1.1, // Lighter
+    15: 1.0, // Normal
+    16: 0.9, // Slightly darker
+    18: 0.8, // Darker
+  };
+
+  const multiplier = thicknessMultipliers[thickness] || 1.0;
+
+  const adjusted = {
+    r: Math.min(255, Math.round(base.r * multiplier)),
+    g: Math.min(255, Math.round(base.g * multiplier)),
+    b: Math.min(255, Math.round(base.b * multiplier)),
+  };
+
+  return `rgb(${adjusted.r}, ${adjusted.g}, ${adjusted.b})`;
 }
 
 /**

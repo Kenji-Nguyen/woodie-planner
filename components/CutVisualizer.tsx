@@ -8,6 +8,8 @@ import {
   createSimpleLayout,
   calculateBoundingBox,
   getCategoryColor,
+  getThicknessColor,
+  getCombinedColor,
   calculateFitScale,
   type LayoutPosition,
 } from "@/lib/layout-helper";
@@ -237,10 +239,12 @@ export default function CutVisualizer() {
 
               {/* Render placed pieces */}
               {currentLayout.cuts.map((cut) => {
-                // Find the original piece to get its category
+                // Find the original piece to get its category and thickness
                 const pieceId = cut.cutPieceId.split("_")[0];
                 const piece = cutList.find((p) => p.id === pieceId);
-                const color = piece ? getCategoryColor(piece.category) : "#6B7280";
+                const color = piece
+                  ? getCombinedColor(piece.category, piece.thickness)
+                  : "#6B7280";
 
                 return (
                   <Group key={cut.cutPieceId} x={20 + cut.x} y={20 + cut.y}>
@@ -411,7 +415,7 @@ export default function CutVisualizer() {
                 <Rect
                   width={pos.width}
                   height={pos.height}
-                  fill={getCategoryColor(pos.category)}
+                  fill={getCombinedColor(pos.category, pos.thickness)}
                   stroke="#1F2937"
                   strokeWidth={2}
                   shadowColor="rgba(0, 0, 0, 0.2)"

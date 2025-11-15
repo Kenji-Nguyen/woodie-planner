@@ -32,6 +32,7 @@ export function generateCutList(config: CabinetConfig): CutPiece[] {
     shelfMode,
     manualShelves,
     autoShelfCount,
+    autoShelfThickness,
   } = config;
   const pieces: CutPiece[] = [];
 
@@ -98,16 +99,17 @@ export function generateCutList(config: CabinetConfig): CutPiece[] {
     // Auto mode: evenly space shelves
     const shelfWidth = width - 2 * thickness; // Between sides
     const shelfDepth = includeBack ? depth - thickness : depth; // Account for back if present
+    const shelfThickness = autoShelfThickness || thickness; // Use auto shelf thickness or default to cabinet thickness
 
     for (let i = 1; i <= autoShelfCount; i++) {
       pieces.push({
         id: generateId(),
-        name: `Shelf ${i}`,
+        name: `Shelf ${i} (${shelfThickness}mm)`,
         width: shelfWidth,
         height: shelfDepth,
         quantity: 1,
         category: "shelf",
-        thickness: thickness, // Default to cabinet thickness
+        thickness: shelfThickness,
       });
     }
   } else if (shelfMode === "manual" && manualShelves && manualShelves.length > 0) {
@@ -118,7 +120,7 @@ export function generateCutList(config: CabinetConfig): CutPiece[] {
 
       pieces.push({
         id: generateId(),
-        name: `Shelf ${index + 1}`,
+        name: `Shelf ${index + 1} (${shelf.thickness}mm)`,
         width: shelfWidth,
         height: shelfDepth,
         quantity: 1,

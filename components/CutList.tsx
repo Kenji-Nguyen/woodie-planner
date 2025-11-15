@@ -65,26 +65,39 @@ export default function CutList() {
           </div>
         </div>
 
-        {/* Area by Thickness */}
-        {Object.keys(summary.areaByThickness).length > 1 && (
-          <div className="pt-3 border-t border-gray-200">
-            <p className="text-xs font-medium text-gray-600 mb-2">
-              Material Area by Thickness:
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {Object.entries(summary.areaByThickness).map(
-                ([thickness, area]) => (
-                  <span
+        {/* Material Breakdown by Thickness */}
+        <div className="pt-3 border-t border-gray-200">
+          <p className="text-xs font-medium text-gray-600 mb-2">
+            Material Requirements by Thickness:
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {Object.entries(summary.areaByThickness)
+              .sort(([a], [b]) => parseInt(a) - parseInt(b))
+              .map(([thickness, area]) => {
+                const piecesOfThisThickness = cutList.filter(
+                  (p) => p.thickness === parseInt(thickness)
+                );
+                const pieceCount = piecesOfThisThickness.reduce(
+                  (sum, p) => sum + p.quantity,
+                  0
+                );
+                return (
+                  <div
                     key={thickness}
-                    className="inline-flex items-center px-2 py-1 rounded text-xs bg-gray-200 text-gray-800"
+                    className="flex items-center justify-between px-3 py-2 rounded bg-gray-200 text-gray-800"
                   >
-                    {thickness}mm: {formatArea(area as number)}
-                  </span>
-                )
-              )}
-            </div>
+                    <span className="text-xs font-semibold">{thickness}mm:</span>
+                    <div className="text-xs text-right">
+                      <div className="font-medium">{formatArea(area as number)}</div>
+                      <div className="text-gray-600">
+                        {pieceCount} piece{pieceCount !== 1 ? "s" : ""}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
           </div>
-        )}
+        </div>
       </div>
 
       {/* Cut List Table */}
